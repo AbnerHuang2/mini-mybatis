@@ -7,18 +7,13 @@ import org.dom4j.io.SAXReader;
 import org.skitii.ibatis.io.Resources;
 import org.xml.sax.InputSource;
 
-import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

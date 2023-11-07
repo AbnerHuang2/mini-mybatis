@@ -1,6 +1,5 @@
 package org.skitii.ibatis.session;
 
-import java.io.IOException;
 
 /**
  * @author skitii
