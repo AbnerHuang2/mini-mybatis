@@ -32,4 +32,12 @@ public class Configuration {
         mapperRegistry.addMapper(type);
     }
 
+    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        return mapperRegistry.getMapper(type, sqlSession);
+    }
+
+    public MappedStatement getMappedStatement(String id) {
+        return mappedStatements.get(id);
+    }
+
 }

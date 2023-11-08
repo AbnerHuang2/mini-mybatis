@@ -18,6 +18,6 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(configuration.getConnection(), configuration.getMappedStatements());
+        return new DefaultSqlSession(configuration);
     }
 }

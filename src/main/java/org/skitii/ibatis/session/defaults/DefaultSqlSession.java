@@ -1,5 +1,6 @@
 package org.skitii.ibatis.session.defaults;
 
+import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.SqlSession;
 import org.skitii.ibatis.mapping.MappedStatement;
 
@@ -16,12 +17,20 @@ import java.util.Map;
  * @since 2023/11/07
  **/
 public class DefaultSqlSession implements SqlSession {
-    private Connection connection;
-    private Map<String, MappedStatement> mapperElement;
+    private Configuration configuration;
 
-    public DefaultSqlSession(Connection connection, Map<String, MappedStatement> mapperElement) {
-        this.connection = connection;
-        this.mapperElement = mapperElement;
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public <T> T getMapper(Class<T> type) {
+        return configuration.getMapper(type, this);
     }
 
     @Override
@@ -32,12 +41,15 @@ public class DefaultSqlSession implements SqlSession {
     @Override
     public <T> T selectOne(String statement, Object parameter) {
         try {
-            MappedStatement mappedStatement = mapperElement.get(statement);
-            PreparedStatement preparedStatement = connection.prepareStatement(mappedStatement.getSql());
-            buildParameter(preparedStatement, parameter, mappedStatement.getParameter());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<T> objects = resultSet2Obj(resultSet, Class.forName(mappedStatement.getResultType()));
-            return objects.isEmpty() ?  null : objects.get(0);
+            MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+
+            return (T) ("你的操作被代理了！" + "\n方法：" + statement + "\n入参：" + parameter + "\n待执行SQL：" + mappedStatement.getSql());
+
+//            PreparedStatement preparedStatement = configuration.getConnection().prepareStatement(mappedStatement.getSql());
+//            buildParameter(preparedStatement, parameter, mappedStatement.getParameter());
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            List<T> objects = resultSet2Obj(resultSet, Class.forName(mappedStatement.getResultType()));
+//            return objects.isEmpty() ?  null : objects.get(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,9 +163,9 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public void close() {
-        if (null == connection) return;
+        if (null == configuration.getConnection()) return;
         try {
-            connection.close();
+            configuration.getConnection().close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

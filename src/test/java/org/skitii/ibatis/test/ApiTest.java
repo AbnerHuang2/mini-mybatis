@@ -5,6 +5,7 @@ import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.session.SqlSession;
 import org.skitii.ibatis.session.SqlSessionFactory;
 import org.skitii.ibatis.session.SqlSessionFactoryBuilder;
+import org.skitii.ibatis.test.dao.UserDao;
 import org.skitii.ibatis.test.domain.User;
 
 import java.io.IOException;
@@ -26,9 +27,14 @@ public class ApiTest {
 
         //使用
         SqlSession session = sqlSessionFactory.openSession();
-        User user = session.selectOne(
-                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", 1);
-        System.out.println(user.getName());
-        session.close();
+//        User user = session.selectOne(
+//                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", 1);
+//        System.out.println(user.getName());
+//        session.close();
+
+        UserDao dao = session.getMapper(UserDao.class);
+        String name = dao.queryName();
+        System.out.println(name);
+
     }
 }

@@ -48,7 +48,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         // 解析xml获取mapper信息
         mapperElement(root.selectNodes("mappers"));
         configuration.setDataSource(dataSource(root.selectNodes("//dataSource")));
-        configuration.setConnection(connection(configuration.getDataSource()));
+        //configuration.setConnection(connection(configuration.getDataSource()));
         return configuration;
     }
 

@@ -2,7 +2,10 @@ package org.skitii.ibatis.binding;
 
 import org.skitii.ibatis.session.SqlSession;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author skitii
@@ -11,16 +14,15 @@ import java.lang.reflect.Proxy;
  **/
 public class MapperProxyFactory<T> {
     private Class<T> mapperInterface;
+    private Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
 
     public MapperProxyFactory(Class<T> mapperInterface) {
         this.mapperInterface = mapperInterface;
     }
 
     public T newInstance(SqlSession sqlSession) {
-        return (T) Proxy.newProxyInstance(
-                mapperInterface.getClassLoader(),
-                new Class[]{mapperInterface},
-                new MapperProxy(sqlSession, mapperInterface));
+        MapperProxy mapperProxy = new MapperProxy(sqlSession, mapperInterface, methodCache);
+        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }
 
 }

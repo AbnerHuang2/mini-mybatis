@@ -8,6 +8,10 @@ import java.util.List;
  **/
 public interface SqlSession {
 
+    Configuration getConfiguration();
+
+    <T> T getMapper(Class<T> type);
+
     <T> T selectOne(String statement);
 
     <T> T selectOne(String statement, Object parameter);

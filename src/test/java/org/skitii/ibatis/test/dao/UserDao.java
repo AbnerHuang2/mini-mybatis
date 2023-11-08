@@ -13,4 +13,6 @@ public interface UserDao {
 
     List<User> queryUserList();
 
+    String queryName();
+
 }

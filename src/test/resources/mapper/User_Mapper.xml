@@ -13,4 +13,10 @@
         FROM t_user
     </select>
 
+    <select id="queryName" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT name
+        FROM t_user
+        where id = #{id}
+    </select>
+
 </mapper>
