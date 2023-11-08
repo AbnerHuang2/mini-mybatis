@@ -29,5 +29,6 @@ public class ApiTest {
         User user = session.selectOne(
                 "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", 1);
         System.out.println(user.getName());
+        session.close();
     }
 }

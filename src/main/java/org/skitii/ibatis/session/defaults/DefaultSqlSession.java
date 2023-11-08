@@ -1,8 +1,10 @@
-package org.skitii.ibatis.session;
+package org.skitii.ibatis.session.defaults;
+
+import org.skitii.ibatis.session.SqlSession;
+import org.skitii.ibatis.mapping.MappedStatement;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +15,11 @@ import java.util.Map;
  * @author skitii
  * @since 2023/11/07
  **/
-public class DefaultSqlSession implements SqlSession{
+public class DefaultSqlSession implements SqlSession {
     private Connection connection;
-    private Map<String, XNode> mapperElement;
+    private Map<String, MappedStatement> mapperElement;
 
-    public DefaultSqlSession(Connection connection, Map<String, XNode> mapperElement) {
+    public DefaultSqlSession(Connection connection, Map<String, MappedStatement> mapperElement) {
         this.connection = connection;
         this.mapperElement = mapperElement;
     }
@@ -30,11 +32,11 @@ public class DefaultSqlSession implements SqlSession{
     @Override
     public <T> T selectOne(String statement, Object parameter) {
         try {
-            XNode xNode = mapperElement.get(statement);
-            PreparedStatement preparedStatement = connection.prepareStatement(xNode.getSql());
-            buildParameter(preparedStatement, parameter, xNode.getParameter());
+            MappedStatement mappedStatement = mapperElement.get(statement);
+            PreparedStatement preparedStatement = connection.prepareStatement(mappedStatement.getSql());
+            buildParameter(preparedStatement, parameter, mappedStatement.getParameter());
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<T> objects = resultSet2Obj(resultSet, Class.forName(xNode.getResultType()));
+            List<T> objects = resultSet2Obj(resultSet, Class.forName(mappedStatement.getResultType()));
             return objects.isEmpty() ?  null : objects.get(0);
         } catch (Exception e) {
             e.printStackTrace();

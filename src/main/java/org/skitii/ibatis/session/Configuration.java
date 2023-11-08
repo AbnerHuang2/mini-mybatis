@@ -1,9 +1,11 @@
 package org.skitii.ibatis.session;
 
 import lombok.Data;
+import org.skitii.ibatis.binding.MapperRegistry;
+import org.skitii.ibatis.mapping.MappedStatement;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,11 +14,22 @@ import java.util.Map;
  **/
 @Data
 public class Configuration {
+
+    //mapper注册器
+    protected MapperRegistry mapperRegistry = new MapperRegistry(this);
+
     Connection connection;
 
     Map<String, String> dataSource;
 
-    Map<String, XNode> mapperElement;
+    Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
+    public void addMappedStatement(MappedStatement ms) {
+        mappedStatements.put(ms.getId(), ms);
+    }
+
+    public void addMapper(Class<?> type) {
+        mapperRegistry.addMapper(type);
+    }
 
 }

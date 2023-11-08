@@ -1,4 +1,8 @@
-package org.skitii.ibatis.session;
+package org.skitii.ibatis.session.defaults;
+
+import org.skitii.ibatis.session.Configuration;
+import org.skitii.ibatis.session.SqlSession;
+import org.skitii.ibatis.session.SqlSessionFactory;
 
 /**
  * @author skitii
@@ -14,6 +18,6 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(configuration.getConnection(), configuration.getMapperElement());
+        return new DefaultSqlSession(configuration.getConnection(), configuration.getMappedStatements());
     }
 }
