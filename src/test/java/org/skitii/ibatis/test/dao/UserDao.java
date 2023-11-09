@@ -13,6 +13,6 @@ public interface UserDao {
 
     List<User> queryUserList();
 
-    String queryName();
+    String queryName(Long id);
 
 }

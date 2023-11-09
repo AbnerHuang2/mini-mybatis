@@ -16,8 +16,28 @@ import java.io.Reader;
  * @since 2023/11/07
  **/
 public class ApiTest {
+
+
     @Test
-    public void testDemo() throws IOException {
+    public void testWithReflect() throws IOException {
+
+        //初始化
+        String resource = "mybatis-config-datasource.xml";
+        Reader reader = Resources.getResourceAsReader(resource);
+        SqlSessionFactory sqlSessionFactory =
+                new SqlSessionFactoryBuilder().build(reader);
+        //使用
+        SqlSession session = sqlSessionFactory.openSession();
+        UserDao dao = session.getMapper(UserDao.class);
+        String name = dao.queryName(1L);
+        System.out.println(name);
+        User user = dao.queryUserInfoById(1L);
+        System.out.println(user.getAge());
+
+    }
+
+    @Test
+    public void testWithSession() throws IOException{
         //初始化
         String resource = "mybatis-config-datasource.xml";
         Reader reader = Resources.getResourceAsReader(resource);
@@ -27,14 +47,10 @@ public class ApiTest {
 
         //使用
         SqlSession session = sqlSessionFactory.openSession();
-//        User user = session.selectOne(
-//                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", 1);
-//        System.out.println(user.getName());
-//        session.close();
-
-        UserDao dao = session.getMapper(UserDao.class);
-        String name = dao.queryName();
-        System.out.println(name);
-
+        User user = session.selectOne(
+                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", new Object[]{1L});
+        System.out.println(user.getName());
+        session.close();
     }
+
 }

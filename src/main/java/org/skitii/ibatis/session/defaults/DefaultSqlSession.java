@@ -1,14 +1,13 @@
 package org.skitii.ibatis.session.defaults;
 
+import org.skitii.ibatis.mapping.Environment;
+import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.SqlSession;
-import org.skitii.ibatis.mapping.MappedStatement;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,8 @@ import java.util.Map;
  **/
 public class DefaultSqlSession implements SqlSession {
     private Configuration configuration;
+
+    Connection connection;
 
     public DefaultSqlSession(Configuration configuration) {
         this.configuration = configuration;
@@ -39,17 +40,16 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> T selectOne(String statement, Object parameter) {
+    public <T> T selectOne(String statement, Object[] parameter) {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
-
-            return (T) ("你的操作被代理了！" + "\n方法：" + statement + "\n入参：" + parameter + "\n待执行SQL：" + mappedStatement.getSql());
-
-//            PreparedStatement preparedStatement = configuration.getConnection().prepareStatement(mappedStatement.getSql());
-//            buildParameter(preparedStatement, parameter, mappedStatement.getParameter());
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//            List<T> objects = resultSet2Obj(resultSet, Class.forName(mappedStatement.getResultType()));
-//            return objects.isEmpty() ?  null : objects.get(0);
+            Environment environment = configuration.getEnvironment();
+            connection = environment.getDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(mappedStatement.getSql());
+            buildParameter(preparedStatement, parameter, mappedStatement.getParameter());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<T> objects = resultSet2Obj(resultSet, Class.forName(mappedStatement.getResultType()));
+            return objects.isEmpty() ?  null : objects.get(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,6 +63,11 @@ public class DefaultSqlSession implements SqlSession {
             int columnCount = metaData.getColumnCount();
 
             while(resultSet.next()) {
+                // 处理基本类型
+                if (clazz.getPackage().getName().startsWith("java.lang")){
+                    list.add((T) resultSet.getObject(1));
+                    continue;
+                }
                 T obj = (T) clazz.newInstance();
                 for (int i = 1; i <= columnCount; i++) {
                     String columnClassName = metaData.getColumnClassName(i);
@@ -85,70 +90,23 @@ public class DefaultSqlSession implements SqlSession {
         return list;
     }
 
-    private void buildParameter(PreparedStatement preparedStatement, Object parameter, Map<Integer, String> parameterMap) throws SQLException, IllegalAccessException {
+    private void buildParameter(PreparedStatement preparedStatement, Object[] parameter, Map<Integer, String> parameterMap) throws SQLException, IllegalAccessException {
         if (null == parameter) return;
         int size = parameterMap.size();
-        if (parameter instanceof Integer) {
-            for (int i = 1; i <= size; i++) {
-                preparedStatement.setInt(i, Integer.parseInt(parameter.toString()));
-            }
-            return;
-        }
-
-        if (parameter instanceof Long) {
-            for (int i = 1; i <= size; i++) {
-                preparedStatement.setLong(i, Long.parseLong(parameter.toString()));
-            }
-            return;
-        }
-
-        if (parameter instanceof String) {
-            for (int i = 1; i <= size; i++) {
-                preparedStatement.setString(i, parameter.toString());
-            }
-            return;
-        }
-
-        Map<String, Object> fieldMap = new HashMap<>();
-        // 对象参数
-        Field[] declaredFields = parameter.getClass().getDeclaredFields();
-        for (Field field : declaredFields) {
-            String name = field.getName();
-            field.setAccessible(true);
-            Object obj = field.get(parameter);
-            field.setAccessible(false);
-            fieldMap.put(name, obj);
-        }
-
         for (int i = 1; i <= size; i++) {
-            String parameterDefine = parameterMap.get(i);
-            Object obj = fieldMap.get(parameterDefine);
-
-            if (obj instanceof Short) {
-                preparedStatement.setShort(i, Short.parseShort(obj.toString()));
-                continue;
+            Object paramValue = parameter[i-1];
+            if (paramValue instanceof Integer) {
+                preparedStatement.setInt(i, Integer.parseInt(paramValue.toString()));
             }
 
-            if (obj instanceof Integer) {
-                preparedStatement.setInt(i, Integer.parseInt(obj.toString()));
-                continue;
+            if (paramValue instanceof Long) {
+                preparedStatement.setLong(i, Long.parseLong(paramValue.toString()));
             }
-
-            if (obj instanceof Long) {
-                preparedStatement.setLong(i, Long.parseLong(obj.toString()));
-                continue;
+            if (paramValue instanceof String) {
+                preparedStatement.setString(i, paramValue.toString());
             }
-
-            if (obj instanceof String) {
-                preparedStatement.setString(i, obj.toString());
-                continue;
-            }
-
-            if (obj instanceof java.util.Date) {
-                preparedStatement.setDate(i, (java.sql.Date) obj);
-            }
-
         }
+
     }
 
     @Override
@@ -163,9 +121,9 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public void close() {
-        if (null == configuration.getConnection()) return;
+        if (null == connection) return;
         try {
-            configuration.getConnection().close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

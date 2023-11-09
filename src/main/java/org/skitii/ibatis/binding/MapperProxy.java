@@ -28,16 +28,6 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // TODO 如何通过反射执行语句？
-        /**
-         * 1. 通过反射获取方法名
-         * 2. 通过反射获取参数
-         * 3. 通过反射获取返回值类型
-         * 4. 从sqlSession获取mapper对应的sql语句
-         * 5. 通过sqlSession执行sql
-         * 6. 处理resultMap 返回结果
-         */
-
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(this, args);
         } else {

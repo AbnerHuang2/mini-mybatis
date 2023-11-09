@@ -1,16 +1,19 @@
 package org.skitii.ibatis.builder.xml;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.skitii.ibatis.builder.BaseBuilder;
 import org.skitii.ibatis.io.Resources;
+import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.mapping.SqlCommandType;
 import org.skitii.ibatis.session.Configuration;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,27 +47,48 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     public Configuration parse() {
-        // 解析xml获取datasouce信息
+        // 解析xml获取environment信息
+        environmentsElement(root.element("environments"));
         // 解析xml获取mapper信息
         mapperElement(root.selectNodes("mappers"));
-        configuration.setDataSource(dataSource(root.selectNodes("//dataSource")));
-        //configuration.setConnection(connection(configuration.getDataSource()));
+
         return configuration;
     }
 
     // 获取数据源配置信息
-    private Map<String,String> dataSource(List<Element> list) {
-        Map<String, String> dataSource = new HashMap<>(4);
-        Element element = list.get(0);
-        List content = element.content();
-        for (Object o : content) {
-            Element e = (Element) o;
-            String name = e.attributeValue("name");
-            String value = e.attributeValue("value");
-            dataSource.put(name, value);
+    private void environmentsElement(Element environments) {
+        String defaultEnvironmentName = environments.attributeValue("default");
+
+        List<Element> environmentList = environments.elements("environment");
+        for (Element environment : environmentList) {
+            String environmentName = environment.attributeValue("id");
+            if (environmentName.equals(defaultEnvironmentName)) {
+                // 设置默认数据源
+                Element dataSource = environment.element("dataSource");
+                Map<String, String> dataSourceMap = new HashMap<>();
+                List<Element> propertyList = dataSource.elements("property");
+                for (Element property : propertyList) {
+                    String name = property.attributeValue("name");
+                    String value = property.attributeValue("value");
+                    dataSourceMap.put(name, value);
+                }
+                Environment.Builder environmentBuilder = new Environment.Builder(environmentName);
+                environmentBuilder.dataSource(resolveDataSource(dataSourceMap));
+                configuration.setEnvironment(environmentBuilder.build());
+            }
         }
+    }
+
+    // 获取连接
+    public DataSource resolveDataSource(Map<String, String> dataSourceMap) {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName(dataSourceMap.get("driver"));
+        dataSource.setUrl(dataSourceMap.get("url"));
+        dataSource.setUsername(dataSourceMap.get("username"));
+        dataSource.setPassword(dataSourceMap.get("password"));
         return dataSource;
     }
+
     private Connection connection(Map<String, String> dataSource) {
         try {
             Class.forName(dataSource.get("driver"));

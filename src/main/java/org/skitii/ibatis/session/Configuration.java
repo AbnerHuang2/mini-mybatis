@@ -2,9 +2,9 @@ package org.skitii.ibatis.session;
 
 import lombok.Data;
 import org.skitii.ibatis.binding.MapperRegistry;
+import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
 
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +18,8 @@ public class Configuration {
     //mapper注册器
     protected MapperRegistry mapperRegistry = new MapperRegistry(this);
 
-    Connection connection;
-
-    Map<String, String> dataSource;
+    //环境
+    protected Environment environment;
 
     Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
@@ -38,6 +37,10 @@ public class Configuration {
 
     public MappedStatement getMappedStatement(String id) {
         return mappedStatements.get(id);
+    }
+
+    public Environment getEnvironment() {
+        return environment;
     }
 
 }
