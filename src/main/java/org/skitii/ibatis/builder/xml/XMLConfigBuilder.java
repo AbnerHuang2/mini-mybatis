@@ -6,6 +6,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.skitii.ibatis.builder.BaseBuilder;
+import org.skitii.ibatis.datasource.DataSourceFactory;
+import org.skitii.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
@@ -18,10 +20,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,40 +62,23 @@ public class XMLConfigBuilder extends BaseBuilder {
         for (Element environment : environmentList) {
             String environmentName = environment.attributeValue("id");
             if (environmentName.equals(defaultEnvironmentName)) {
+                DataSourceFactory dataSourceFactory = new PooledDataSourceFactory();
                 // 设置默认数据源
                 Element dataSource = environment.element("dataSource");
-                Map<String, String> dataSourceMap = new HashMap<>();
                 List<Element> propertyList = dataSource.elements("property");
-                for (Element property : propertyList) {
-                    String name = property.attributeValue("name");
-                    String value = property.attributeValue("value");
-                    dataSourceMap.put(name, value);
+                Properties props = new Properties();
+                for (Element element : propertyList) {
+                    String name = element.attributeValue("name");
+                    String value = element.attributeValue("value");
+                    props.setProperty(name, value);
                 }
+                dataSourceFactory.setProperties(props);
+
                 Environment.Builder environmentBuilder = new Environment.Builder(environmentName);
-                environmentBuilder.dataSource(resolveDataSource(dataSourceMap));
+                environmentBuilder.dataSource(dataSourceFactory.getDataSource());
                 configuration.setEnvironment(environmentBuilder.build());
             }
         }
-    }
-
-    // 获取连接
-    public DataSource resolveDataSource(Map<String, String> dataSourceMap) {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName(dataSourceMap.get("driver"));
-        dataSource.setUrl(dataSourceMap.get("url"));
-        dataSource.setUsername(dataSourceMap.get("username"));
-        dataSource.setPassword(dataSourceMap.get("password"));
-        return dataSource;
-    }
-
-    private Connection connection(Map<String, String> dataSource) {
-        try {
-            Class.forName(dataSource.get("driver"));
-            return DriverManager.getConnection(dataSource.get("url"), dataSource.get("username"), dataSource.get("password"));
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     // 获取SQL语句信息
