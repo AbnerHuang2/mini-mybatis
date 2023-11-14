@@ -1,8 +1,13 @@
 package org.skitii.ibatis.session.defaults;
 
+import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.SqlSession;
 import org.skitii.ibatis.session.SqlSessionFactory;
+import org.skitii.ibatis.session.TransactionIsolationLevel;
+import org.skitii.ibatis.transaction.Transaction;
+import org.skitii.ibatis.transaction.TransactionFactory;
 
 /**
  * @author skitii
@@ -18,6 +23,11 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(configuration);
+        final Environment environment = configuration.getEnvironment();
+        TransactionFactory transactionFactory = environment.getTransactionFactory();
+        Transaction tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, false);
+        // 创建执行器
+        final Executor executor = configuration.newExecutor(tx);
+        return new DefaultSqlSession(configuration, executor);
     }
 }

@@ -14,11 +14,9 @@ public class MappedStatement {
     private Configuration configuration;
     private String namespace;
     private String id;
-    private String parameterType;
-    private String resultType;
-    private String sql;
+
+    private BoundSql boundSql;
     private SqlCommandType sqlCommandType;
-    private Map<Integer, String> parameter;
 
     /**
      * 建造者
@@ -31,10 +29,7 @@ public class MappedStatement {
             mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlCommandType = sqlCommandType;
-            mappedStatement.parameterType = parameterType;
-            mappedStatement.resultType = resultType;
-            mappedStatement.sql = sql;
-            mappedStatement.parameter = parameter;
+            mappedStatement.boundSql = new BoundSql(sql, parameter, parameterType, resultType);
         }
 
         public MappedStatement build() {

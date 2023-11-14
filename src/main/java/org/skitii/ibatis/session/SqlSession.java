@@ -19,6 +19,4 @@ public interface SqlSession {
     <T> List<T> selectList(String statement);
 
     <T> List<T> selectList(String statement, Object parameter);
-
-    void close();
 }

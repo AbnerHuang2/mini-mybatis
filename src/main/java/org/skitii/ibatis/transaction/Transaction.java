@@ -12,7 +12,7 @@ public interface Transaction {
 
     void commit() throws SQLException;
 
-    void roTransactionllback() throws SQLException;
+    void rollback() throws SQLException;
 
     void close() throws SQLException;
 

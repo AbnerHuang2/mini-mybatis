@@ -5,8 +5,16 @@ import org.skitii.ibatis.binding.MapperRegistry;
 import org.skitii.ibatis.datasource.druid.DruidDataSourceFactory;
 import org.skitii.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.skitii.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
+import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.executor.SimpleExecutor;
+import org.skitii.ibatis.executor.resultset.DefaultResultSetHandler;
+import org.skitii.ibatis.executor.resultset.ResultSetHandler;
+import org.skitii.ibatis.executor.statement.PreparedStatementHandler;
+import org.skitii.ibatis.executor.statement.StatementHandler;
+import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
+import org.skitii.ibatis.transaction.Transaction;
 import org.skitii.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.skitii.ibatis.type.TypeAliasRegistry;
 
@@ -57,6 +65,27 @@ public class Configuration {
 
     public Environment getEnvironment() {
         return environment;
+    }
+
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(boundSql);
+    }
+
+    /**
+     * 生产执行器
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
+    }
+
+    /**
+     * 创建语句处理器
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler);
     }
 
 }

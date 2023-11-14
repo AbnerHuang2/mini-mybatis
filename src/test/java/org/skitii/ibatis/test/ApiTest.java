@@ -10,6 +10,7 @@ import org.skitii.ibatis.test.domain.User;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 /**
  * @author skitii
@@ -33,7 +34,6 @@ public class ApiTest {
         System.out.println(name);
         User user = dao.queryUserInfoById(1L);
         System.out.println(user.getAge());
-
     }
 
     @Test
@@ -50,7 +50,6 @@ public class ApiTest {
         User user = session.selectOne(
                 "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", new Object[]{1L});
         System.out.println(user.getName());
-        session.close();
     }
 
 }
