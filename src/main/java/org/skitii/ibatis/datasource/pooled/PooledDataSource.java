@@ -61,7 +61,7 @@ public class PooledDataSource implements DataSource {
                     newConnection.setCreatedTimestamp(connection.getCreatedTimestamp());
                     newConnection.setLastUsedTimestamp(connection.getLastUsedTimestamp());
                     connection.invalidate();
-                    logger.info("Returned connection " + newConnection.getRealHashCode() + " to pool.");
+                    logger.info("Returned connection {} to pool.",newConnection.getRealHashCode());
 
                     // 通知其他线程可以来抢DB连接了
                     state.notifyAll();
@@ -74,11 +74,11 @@ public class PooledDataSource implements DataSource {
                     }
                     // 将connection关闭
                     connection.getRealConnection().close();
-                    logger.info("Closed connection " + connection.getRealHashCode() + ".");
+                    logger.info("Closed connection {}.",connection.getRealHashCode());
                     connection.invalidate();
                 }
             } else {
-                logger.info("A bad connection (" + connection.getRealHashCode() + ") attempted to return to the pool, discarding connection.");
+                logger.info("A bad connection ({}) attempted to return to the pool, discarding connection.", connection.getRealHashCode());
                 state.badConnectionCount++;
             }
         }
@@ -95,14 +95,14 @@ public class PooledDataSource implements DataSource {
                 // 如果有空闲链接：返回第一个
                 if (!state.idleConnections.isEmpty()) {
                     conn = state.idleConnections.remove(0);
-                    logger.info("Checked out connection " + conn.getRealHashCode() + " from pool.");
+                    logger.info("Checked out connection {} from pool.", conn.getRealHashCode());
                 }
                 // 如果无空闲链接：创建新的链接
                 else {
                     // 活跃连接数不足
                     if (state.activeConnections.size() < poolMaximumActiveConnections) {
                         conn = new PooledConnection(dataSource.getConnection(), this);
-                        logger.info("Created connection " + conn.getRealHashCode() + ".");
+                        logger.info("Created connection {}.", conn.getRealHashCode());
                     }
                     // 活跃连接数已满
                     else {
@@ -121,7 +121,7 @@ public class PooledDataSource implements DataSource {
                             // 删掉最老的链接，然后重新实例化一个新的链接
                             conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
                             oldestActiveConnection.invalidate();
-                            logger.info("Claimed overdue connection " + conn.getRealHashCode() + ".");
+                            logger.info("Claimed overdue connection {}.", conn.getRealHashCode());
                         }
                         // 如果checkout超时时间不够长，则等待
                         else {
@@ -130,7 +130,7 @@ public class PooledDataSource implements DataSource {
                                     state.hadToWaitCount++;
                                     countedWait = true;
                                 }
-                                logger.info("Waiting as long as " + poolTimeToWait + " milliseconds for connection.");
+                                logger.info("Waiting as long as {} milliseconds for connection.", poolTimeToWait);
                                 long wt = System.currentTimeMillis();
                                 state.wait(poolTimeToWait);
                                 state.accumulatedWaitTime += System.currentTimeMillis() - wt;
@@ -155,7 +155,7 @@ public class PooledDataSource implements DataSource {
                         state.requestCount++;
                         state.accumulatedRequestTime += System.currentTimeMillis() - t;
                     } else {
-                        logger.info("A bad connection (" + conn.getRealHashCode() + ") was returned from the pool, getting another connection.");
+                        logger.info("A bad connection ({}) was returned from the pool, getting another connection.", conn.getRealHashCode());
                         // 如果没拿到，统计信息：失败链接 +1
                         state.badConnectionCount++;
                         localBadConnectionCount++;
