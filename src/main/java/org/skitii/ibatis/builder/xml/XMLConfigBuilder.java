@@ -51,7 +51,6 @@ public class XMLConfigBuilder extends BaseBuilder {
            // 解析xml获取mapper信息
            mapperElement(root.selectNodes("mappers"));
        } catch (Exception e) {
-
            throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
        }
 

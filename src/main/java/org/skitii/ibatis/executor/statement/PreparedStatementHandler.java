@@ -1,5 +1,6 @@
 package org.skitii.ibatis.executor.statement;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.db.meta.JdbcType;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
@@ -37,9 +38,7 @@ public class PreparedStatementHandler extends BaseStatementHandler{
 
     private void setParameters(PreparedStatement ps) throws SQLException{
         Map<Integer, String> parameterMappings = mappedStatement.getBoundSql().getParameterMappings();
-        if (parameterMappings == null || parameterMappings.isEmpty()) {
-            return;
-        } else {
+        if (CollectionUtil.isNotEmpty(parameterMappings)) {
             Object[] args = (Object[]) parameterObject;
             buildParameter(ps, args, parameterMappings);
         }
