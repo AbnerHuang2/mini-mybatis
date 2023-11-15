@@ -19,7 +19,9 @@ import org.skitii.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.skitii.ibatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author skitii
@@ -67,6 +69,8 @@ public class Configuration {
         return environment;
     }
 
+    protected final Set<String> loadedResources = new HashSet<>();
+
     /**
      * 创建结果集处理器
      */
@@ -86,6 +90,14 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
         return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler);
+    }
+
+    public boolean isResourceLoaded(String resource) {
+        return loadedResources.contains(resource);
+    }
+
+    public void addLoadedResource(String resource) {
+        loadedResources.add(resource);
     }
 
 }
