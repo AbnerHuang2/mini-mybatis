@@ -5,6 +5,7 @@ import cn.hutool.db.meta.JdbcType;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
 import org.skitii.ibatis.mapping.MappedStatement;
+import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.ResultHandler;
 
@@ -33,15 +34,12 @@ public class PreparedStatementHandler extends BaseStatementHandler{
     public void parameterize(Statement statement) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;
         //处理参数注入
-        setParameters(ps);
+        ps.setLong(1, Long.parseLong(((Object[]) parameterObject)[0].toString()));
     }
 
     private void setParameters(PreparedStatement ps) throws SQLException{
-        Map<Integer, String> parameterMappings = mappedStatement.getBoundSql().getParameterMappings();
-        if (CollectionUtil.isNotEmpty(parameterMappings)) {
-            Object[] args = (Object[]) parameterObject;
-            buildParameter(ps, args, parameterMappings);
-        }
+        SqlSource sqlSource = mappedStatement.getSqlSource();
+
     }
 
     private void buildParameter(PreparedStatement preparedStatement, Object[] parameter, Map<Integer, String> parameterMap) throws SQLException {

@@ -15,8 +15,9 @@ public class MappedStatement {
     private String namespace;
     private String id;
 
-    private BoundSql boundSql;
+    private SqlSource sqlSource;
     private SqlCommandType sqlCommandType;
+    Class<?> resultType;
 
     /**
      * 建造者
@@ -25,11 +26,12 @@ public class MappedStatement {
 
         private MappedStatement mappedStatement = new MappedStatement();
 
-        public Builder(Configuration configuration, String id, SqlCommandType sqlCommandType, String parameterType, String resultType, String sql, Map<Integer, String> parameter) {
+        public Builder(Configuration configuration, String id, SqlCommandType sqlCommandType, SqlSource sqlSource, Class<?> resultType) {
             mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlCommandType = sqlCommandType;
-            mappedStatement.boundSql = new BoundSql(sql, parameter, parameterType, resultType);
+            mappedStatement.sqlSource = sqlSource;
+            mappedStatement.resultType = resultType;
         }
 
         public MappedStatement build() {

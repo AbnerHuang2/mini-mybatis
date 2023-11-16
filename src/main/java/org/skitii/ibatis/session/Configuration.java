@@ -14,6 +14,13 @@ import org.skitii.ibatis.executor.statement.StatementHandler;
 import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
+import org.skitii.ibatis.reflection.MetaObject;
+import org.skitii.ibatis.reflection.factory.DefaultObjectFactory;
+import org.skitii.ibatis.reflection.factory.ObjectFactory;
+import org.skitii.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import org.skitii.ibatis.reflection.wrapper.ObjectWrapperFactory;
+import org.skitii.ibatis.scripting.LanguageDriverRegistry;
+import org.skitii.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.skitii.ibatis.transaction.Transaction;
 import org.skitii.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.skitii.ibatis.type.TypeAliasRegistry;
@@ -44,6 +51,8 @@ public class Configuration {
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+
+        languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
     // 类型别名注册机
@@ -71,11 +80,19 @@ public class Configuration {
 
     protected final Set<String> loadedResources = new HashSet<>();
 
+    // 对象工厂和对象包装器工厂
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    protected String databaseId;
+
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+
     /**
      * 创建结果集处理器
      */
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
-        return new DefaultResultSetHandler(boundSql);
+        return new DefaultResultSetHandler(boundSql, mappedStatement);
     }
 
     /**
@@ -98,6 +115,19 @@ public class Configuration {
 
     public void addLoadedResource(String resource) {
         loadedResources.add(resource);
+    }
+
+    // 创建元对象
+    public MetaObject newMetaObject(Object object) {
+        return MetaObject.forObject(object, objectFactory, objectWrapperFactory);
+    }
+
+    public String getDatabaseId() {
+        return databaseId;
+    }
+
+    public LanguageDriverRegistry getLanguageRegistry() {
+        return languageRegistry;
     }
 
 }

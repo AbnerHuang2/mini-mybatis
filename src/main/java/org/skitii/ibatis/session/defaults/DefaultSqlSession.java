@@ -43,10 +43,11 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> T selectOne(String statement, Object[] parameter) {
+    public <T> T selectOne(String statement, Object parameter) {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
-            List<T> list = executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, mappedStatement.getBoundSql());
+            BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);
+            List<T> list = executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, boundSql);
             return list.get(0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +64,8 @@ public class DefaultSqlSession implements SqlSession {
     public <T> List<T> selectList(String statement, Object parameter) {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
-            return executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, mappedStatement.getBoundSql());
+            BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);
+            return executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, boundSql);
         } catch (Exception e) {
             e.printStackTrace();
         }

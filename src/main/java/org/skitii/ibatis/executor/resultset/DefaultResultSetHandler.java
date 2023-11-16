@@ -1,6 +1,7 @@
 package org.skitii.ibatis.executor.resultset;
 
 import org.skitii.ibatis.mapping.BoundSql;
+import org.skitii.ibatis.mapping.MappedStatement;
 
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
@@ -16,20 +17,17 @@ import java.util.List;
  **/
 public class DefaultResultSetHandler implements ResultSetHandler{
     private final BoundSql boundSql;
+    private final MappedStatement mappedStatement;
 
-    public DefaultResultSetHandler(BoundSql boundSql) {
+    public DefaultResultSetHandler(BoundSql boundSql, MappedStatement mappedStatement) {
         this.boundSql = boundSql;
+        this.mappedStatement = mappedStatement;
     }
 
     @Override
     public <E> List<E> handleResultSets(Statement stmt) throws SQLException {
         ResultSet resultSet = stmt.getResultSet();
-        try {
-            return resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return resultSet2Obj(resultSet, mappedStatement.getResultType());
     }
 
     private <T> List<T> resultSet2Obj(ResultSet resultSet, Class<?> clazz) {
