@@ -34,28 +34,7 @@ public class PreparedStatementHandler extends BaseStatementHandler{
     public void parameterize(Statement statement) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;
         //处理参数注入
-        ps.setLong(1, Long.parseLong(((Object[]) parameterObject)[0].toString()));
-    }
-
-    private void setParameters(PreparedStatement ps) throws SQLException{
-        SqlSource sqlSource = mappedStatement.getSqlSource();
-
-    }
-
-    private void buildParameter(PreparedStatement preparedStatement, Object[] parameter, Map<Integer, String> parameterMap) throws SQLException {
-        if (null == parameter) return;
-        int size = parameterMap.size();
-        for (int i = 1; i <= size; i++) {
-            Object paramValue = parameter[i-1];
-            if (paramValue instanceof Integer) {
-                preparedStatement.setInt(i, Integer.parseInt(paramValue.toString()));
-            } else if (paramValue instanceof Long) {
-                preparedStatement.setLong(i, Long.parseLong(paramValue.toString()));
-            } else if (paramValue instanceof String) {
-                preparedStatement.setString(i, paramValue.toString());
-            }
-        }
-
+        parameterHandler.setParameters(ps);
     }
 
     @Override

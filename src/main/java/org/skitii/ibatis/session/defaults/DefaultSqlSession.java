@@ -1,5 +1,7 @@
 package org.skitii.ibatis.session.defaults;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.Environment;
@@ -17,6 +19,7 @@ import java.util.Map;
  * @author skitii
  * @since 2023/11/07
  **/
+@Slf4j
 public class DefaultSqlSession implements SqlSession {
     private Configuration configuration;
 
@@ -44,6 +47,7 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
+        log.info("执行查询 statement：{} parameter：{}", statement, JSON.toJSONString(parameter));
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
             BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);

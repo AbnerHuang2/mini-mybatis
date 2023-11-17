@@ -1,6 +1,7 @@
 package org.skitii.ibatis.executor.statement;
 
 import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.executor.parameter.ParameterHandler;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
 import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
@@ -23,6 +24,7 @@ public abstract class BaseStatementHandler implements StatementHandler{
 
     protected final Object parameterObject;
     protected final ResultSetHandler resultSetHandler;
+    protected final ParameterHandler parameterHandler;
 
     protected BoundSql boundSql;
 
@@ -33,6 +35,7 @@ public abstract class BaseStatementHandler implements StatementHandler{
         this.parameterObject = parameterObject;
         this.boundSql = mappedStatement.getSqlSource().getBoundSql(parameterObject);
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
     }
 
     public Statement prepare(Connection connection) throws SQLException {

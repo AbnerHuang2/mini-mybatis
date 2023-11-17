@@ -7,6 +7,7 @@ import org.skitii.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.skitii.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.executor.SimpleExecutor;
+import org.skitii.ibatis.executor.parameter.ParameterHandler;
 import org.skitii.ibatis.executor.resultset.DefaultResultSetHandler;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
 import org.skitii.ibatis.executor.statement.PreparedStatementHandler;
@@ -19,11 +20,13 @@ import org.skitii.ibatis.reflection.factory.DefaultObjectFactory;
 import org.skitii.ibatis.reflection.factory.ObjectFactory;
 import org.skitii.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.skitii.ibatis.reflection.wrapper.ObjectWrapperFactory;
+import org.skitii.ibatis.scripting.LanguageDriver;
 import org.skitii.ibatis.scripting.LanguageDriverRegistry;
 import org.skitii.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.skitii.ibatis.transaction.Transaction;
 import org.skitii.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.skitii.ibatis.type.TypeAliasRegistry;
+import org.skitii.ibatis.type.TypeHandlerRegistry;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +47,8 @@ public class Configuration {
     protected Environment environment;
 
     Map<String, MappedStatement> mappedStatements = new HashMap<>();
+
+    TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
@@ -128,6 +133,17 @@ public class Configuration {
 
     public LanguageDriverRegistry getLanguageRegistry() {
         return languageRegistry;
+    }
+
+    public LanguageDriver getDefaultScriptingLanguageInstance() {
+        return languageRegistry.getDefaultDriver();
+    }
+
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+        // 创建参数处理器
+        ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+        // 插件的一些参数，也是在这里处理，暂时不添加这部分内容 interceptorChain.pluginAll(parameterHandler);
+        return parameterHandler;
     }
 
 }

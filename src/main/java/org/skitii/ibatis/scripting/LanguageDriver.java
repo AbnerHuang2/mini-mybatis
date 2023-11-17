@@ -1,8 +1,12 @@
 package org.skitii.ibatis.scripting;
 
 import org.dom4j.Element;
+import org.skitii.ibatis.executor.parameter.ParameterHandler;
+import org.skitii.ibatis.mapping.BoundSql;
+import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.session.Configuration;
+import org.skitii.ibatis.type.TypeHandler;
 
 /**
  * @author skitii
@@ -11,4 +15,6 @@ import org.skitii.ibatis.session.Configuration;
  **/
 public interface LanguageDriver {
     SqlSource createSqlSource(Configuration configuration, Element script, Class<?> parameterType);
+
+    ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql);
 }

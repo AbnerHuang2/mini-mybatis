@@ -1,6 +1,7 @@
 package org.skitii.ibatis.mapping;
 
 import lombok.Data;
+import org.skitii.ibatis.scripting.LanguageDriver;
 import org.skitii.ibatis.session.Configuration;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ public class MappedStatement {
     private SqlSource sqlSource;
     private SqlCommandType sqlCommandType;
     Class<?> resultType;
+    private LanguageDriver lang;
 
     /**
      * 建造者
@@ -32,6 +34,7 @@ public class MappedStatement {
             mappedStatement.sqlCommandType = sqlCommandType;
             mappedStatement.sqlSource = sqlSource;
             mappedStatement.resultType = resultType;
+            mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 
         public MappedStatement build() {
