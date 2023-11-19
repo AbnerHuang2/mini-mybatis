@@ -3,6 +3,7 @@ package org.skitii.ibatis.type;
 import org.skitii.ibatis.session.Configuration;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -22,4 +23,13 @@ public abstract class BaseTypeHandler<T> implements TypeHandler<T> {
         setNonNullParameter(ps, i, parameter, jdbcType);
     }
     protected abstract void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
+
+    @Override
+    public T getResult(ResultSet rs, String columnName) throws SQLException {
+        return getNullableResult(rs, columnName);
+    }
+
+    protected abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;
+
+
 }

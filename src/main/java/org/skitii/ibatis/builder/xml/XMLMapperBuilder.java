@@ -4,6 +4,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.skitii.ibatis.builder.BaseBuilder;
+import org.skitii.ibatis.builder.MapperBuildAssistant;
 import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.session.Configuration;
 import org.xml.sax.InputSource;
@@ -15,12 +16,14 @@ public class XMLMapperBuilder extends BaseBuilder {
     private String resource;
     private Element element;
     private String namespace;
+    private MapperBuildAssistant builderAssistant;
 
     public XMLMapperBuilder(Configuration configuration, Reader reader, String resource) throws DocumentException {
         super(configuration);
         this.element = new SAXReader().read(new InputSource(reader)).getRootElement();
         this.namespace = element.attributeValue("namespace");
         this.resource = resource;
+        this.builderAssistant = new MapperBuildAssistant(configuration, resource);
     }
 
     public void parse() throws Exception{
@@ -38,7 +41,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     private void buildStatementFromContext(List<Element> list) {
         for (Element ele : list) {
             //解析sql语句
-            XMLStatementBuilder statementBuilder = new XMLStatementBuilder(configuration, ele, namespace);
+            XMLStatementBuilder statementBuilder = new XMLStatementBuilder(configuration, ele, namespace, builderAssistant);
             statementBuilder.parseStatementNode();
         }
     }

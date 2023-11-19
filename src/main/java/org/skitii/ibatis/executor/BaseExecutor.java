@@ -5,6 +5,7 @@ import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.ResultHandler;
+import org.skitii.ibatis.session.RowBounds;
 import org.skitii.ibatis.transaction.Transaction;
 
 import java.sql.SQLException;
@@ -29,14 +30,14 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        return doQuery(ms, parameter, resultHandler, boundSql);
+        return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     @Override
     public Transaction getTransaction() {

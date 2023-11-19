@@ -12,8 +12,12 @@ public class MapperMethod {
     private final SqlCommand command;
     private final MethodSignature method;
 
+    private Class<?> returnType;
+
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration configuration) {
         this.command = new SqlCommand(configuration, mapperInterface, method);
+        returnType = method.getReturnType();
+
         this.method = new MethodSignature(configuration, method);
     }
 
@@ -28,7 +32,12 @@ public class MapperMethod {
                 break;
             case SELECT:
                 Object param = method.convertArgsToSqlCommandParam(args);
-                result = sqlSession.selectOne(command.getName(), param);
+                if (Collection.class.isAssignableFrom(returnType)) {
+                    // 返回值是集合
+                    result = sqlSession.selectList(command.getName(), param);
+                } else {
+                    result = sqlSession.selectOne(command.getName(), param);
+                }
                 break;
             default:
                 throw new RuntimeException("Unknown execution method for: " + command.getName());

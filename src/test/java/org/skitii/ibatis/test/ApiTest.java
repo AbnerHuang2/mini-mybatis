@@ -34,6 +34,9 @@ public class ApiTest {
         System.out.println(name);
         User user = dao.queryUserInfoById(1L);
         System.out.println(user.getAge());
+
+        List<User> users = dao.queryUserList();
+        System.out.println(users.size());
     }
 
     @Test

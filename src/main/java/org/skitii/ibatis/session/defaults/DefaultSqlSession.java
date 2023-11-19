@@ -4,16 +4,13 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.mapping.BoundSql;
-import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.Configuration;
+import org.skitii.ibatis.session.RowBounds;
 import org.skitii.ibatis.session.SqlSession;
 
-import java.lang.reflect.Method;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author skitii
@@ -51,7 +48,7 @@ public class DefaultSqlSession implements SqlSession {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
             BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);
-            List<T> list = executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, boundSql);
+            List<T> list = executor.query(mappedStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, boundSql);
             return list.get(0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +66,7 @@ public class DefaultSqlSession implements SqlSession {
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
             BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);
-            return executor.query(mappedStatement, parameter, Executor.NO_RESULT_HANDLER, boundSql);
+            return executor.query(mappedStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, boundSql);
         } catch (Exception e) {
             e.printStackTrace();
         }

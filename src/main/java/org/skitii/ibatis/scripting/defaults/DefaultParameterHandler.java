@@ -57,6 +57,7 @@ public class DefaultParameterHandler implements ParameterHandler {
                 value = parameterObject;
             } else {
                 MetaObject metaObject = configuration.newMetaObject(parameterObject);
+
                 value = metaObject.getValue(propertyName);
             }
             // 设置参数

@@ -17,6 +17,8 @@ public class TypeHandlerRegistry {
     private final Map<Class<?>, TypeHandler<?>> ALL_TYPE_HANDLERS_MAP = new HashMap<>();
 
     public TypeHandlerRegistry() {
+        register(Integer.class, new IntegerTypeHandler());
+        register(int.class, new IntegerTypeHandler());
         register(Long.class, new LongTypeHandler());
         register(long.class, new LongTypeHandler());
 

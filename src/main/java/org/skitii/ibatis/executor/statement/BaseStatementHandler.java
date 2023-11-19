@@ -7,6 +7,7 @@ import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.ResultHandler;
+import org.skitii.ibatis.session.RowBounds;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,13 +29,14 @@ public abstract class BaseStatementHandler implements StatementHandler{
 
     protected BoundSql boundSql;
 
-    protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler) {
+    protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
+                                   RowBounds rowBounds, ResultHandler resultHandler) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
         this.parameterObject = parameterObject;
         this.boundSql = mappedStatement.getSqlSource().getBoundSql(parameterObject);
-        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
+        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, resultHandler, boundSql);
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
     }
 

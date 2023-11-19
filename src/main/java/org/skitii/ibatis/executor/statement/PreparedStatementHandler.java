@@ -1,19 +1,15 @@
 package org.skitii.ibatis.executor.statement;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.db.meta.JdbcType;
 import org.skitii.ibatis.executor.Executor;
-import org.skitii.ibatis.executor.resultset.ResultSetHandler;
 import org.skitii.ibatis.mapping.MappedStatement;
-import org.skitii.ibatis.mapping.SqlSource;
-import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.ResultHandler;
+import org.skitii.ibatis.session.RowBounds;
 
-import java.lang.reflect.Method;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author skitii
@@ -21,8 +17,8 @@ import java.util.Map;
  **/
 public class PreparedStatementHandler extends BaseStatementHandler{
 
-    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler) {
-        super(executor, mappedStatement, parameterObject, resultHandler);
+    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) {
+        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler);
     }
 
     @Override

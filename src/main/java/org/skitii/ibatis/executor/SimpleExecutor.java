@@ -5,10 +5,10 @@ import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.ResultHandler;
+import org.skitii.ibatis.session.RowBounds;
 import org.skitii.ibatis.transaction.Transaction;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class SimpleExecutor extends BaseExecutor {
     }
 
     @Override
-    protected <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+    protected <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         try{
             Configuration configuration = ms.getConfiguration();
-            StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, resultHandler, boundSql);
+            StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, rowBounds, resultHandler, boundSql);
             Connection connection = transaction.getConnection();
             Statement stmt = handler.prepare(connection);
             handler.parameterize(stmt);

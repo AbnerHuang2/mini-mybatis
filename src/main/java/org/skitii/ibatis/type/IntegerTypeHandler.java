@@ -10,16 +10,16 @@ import java.sql.SQLException;
  * @github https://github.com/fuzhengwei
  * @Copyright 公众号：bugstack虫洞栈 | 博客：https://bugstack.cn - 沉淀、分享、成长，让自己和他人都能有所收获！
  */
-public class LongTypeHandler extends BaseTypeHandler<Long> {
+public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
 
     @Override
-    protected void setNonNullParameter(PreparedStatement ps, int i, Long parameter, JdbcType jdbcType) throws SQLException {
-        ps.setLong(i, parameter);
+    protected void setNonNullParameter(PreparedStatement ps, int i, Integer parameter, JdbcType jdbcType) throws SQLException {
+        ps.setInt(i, parameter);
     }
 
     @Override
-    protected Long getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        return rs.getLong(columnName);
+    protected Integer getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        return rs.getInt(columnName);
     }
 
 }
