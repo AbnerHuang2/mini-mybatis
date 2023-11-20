@@ -50,9 +50,7 @@ public class SimpleExecutor extends BaseExecutor {
             // 准备语句
             stmt = prepareStatement(handler);
             // StatementHandler.update
-            int update = handler.update(stmt);
-            commit(true);
-            return update;
+            return handler.update(stmt);
         } finally {
             closeStatement(stmt);
         }

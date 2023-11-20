@@ -23,9 +23,14 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
+        return openSession(TransactionIsolationLevel.READ_COMMITTED, false);
+    }
+
+    @Override
+    public SqlSession openSession(TransactionIsolationLevel transactionIsolationLevel, boolean autoCommit) {
         final Environment environment = configuration.getEnvironment();
         TransactionFactory transactionFactory = environment.getTransactionFactory();
-        Transaction tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, false);
+        Transaction tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), transactionIsolationLevel, autoCommit);
         // 创建执行器
         final Executor executor = configuration.newExecutor(tx);
         return new DefaultSqlSession(configuration, executor);

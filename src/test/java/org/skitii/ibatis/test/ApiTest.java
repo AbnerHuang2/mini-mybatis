@@ -1,12 +1,12 @@
 package org.skitii.ibatis.test;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.session.SqlSession;
 import org.skitii.ibatis.session.SqlSessionFactory;
 import org.skitii.ibatis.session.SqlSessionFactoryBuilder;
+import org.skitii.ibatis.session.TransactionIsolationLevel;
 import org.skitii.ibatis.test.dao.UserDao;
 import org.skitii.ibatis.test.domain.User;
 
@@ -30,7 +30,7 @@ public class ApiTest {
         SqlSessionFactory sqlSessionFactory =
                 new SqlSessionFactoryBuilder().build(reader);
         //使用
-        sqlSession = sqlSessionFactory.openSession();
+        sqlSession = sqlSessionFactory.openSession(TransactionIsolationLevel.READ_COMMITTED, true);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ApiTest {
     @Test
     public void testWithSession() throws IOException{
         User user = sqlSession.selectOne(
-                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", new Object[]{1L});
+                "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", 1L);
         System.out.println(user.getName());
     }
 

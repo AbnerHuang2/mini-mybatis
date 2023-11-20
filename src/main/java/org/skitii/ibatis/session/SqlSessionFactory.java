@@ -7,4 +7,7 @@ package org.skitii.ibatis.session;
  **/
 public interface SqlSessionFactory {
     SqlSession openSession();
+
+    SqlSession openSession(TransactionIsolationLevel transactionIsolationLevel,boolean autoCommit);
+
 }
