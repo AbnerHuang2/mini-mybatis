@@ -1,5 +1,7 @@
 package org.skitii.ibatis.test;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.session.SqlSession;
@@ -18,18 +20,24 @@ import java.util.List;
  **/
 public class ApiTest {
 
+    private SqlSession sqlSession;
 
-    @Test
-    public void testWithReflect() throws IOException {
-
+    @BeforeEach
+    public void init() throws IOException{
         //初始化
         String resource = "mybatis-config-datasource.xml";
         Reader reader = Resources.getResourceAsReader(resource);
         SqlSessionFactory sqlSessionFactory =
                 new SqlSessionFactoryBuilder().build(reader);
         //使用
-        SqlSession session = sqlSessionFactory.openSession();
-        UserDao dao = session.getMapper(UserDao.class);
+        sqlSession = sqlSessionFactory.openSession();
+    }
+
+    @Test
+    public void testWithReflect() throws IOException {
+
+
+        UserDao dao = sqlSession.getMapper(UserDao.class);
         String name = dao.queryName(1L);
         System.out.println(name);
         User user = dao.queryUserInfoById(1L);
@@ -40,17 +48,18 @@ public class ApiTest {
     }
 
     @Test
+    public void testInsert() {
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+        User user = new User();
+        user.setAge(18);
+        user.setName("abner");
+        int cnt = dao.insertUser(user);
+        System.out.println(cnt);
+    }
+
+    @Test
     public void testWithSession() throws IOException{
-        //初始化
-        String resource = "mybatis-config-datasource.xml";
-        Reader reader = Resources.getResourceAsReader(resource);
-
-        SqlSessionFactory sqlSessionFactory =
-                new SqlSessionFactoryBuilder().build(reader);
-
-        //使用
-        SqlSession session = sqlSessionFactory.openSession();
-        User user = session.selectOne(
+        User user = sqlSession.selectOne(
                 "org.skitii.ibatis.test.dao.UserDao.queryUserInfoById", new Object[]{1L});
         System.out.println(user.getName());
     }

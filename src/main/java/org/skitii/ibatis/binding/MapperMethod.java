@@ -12,27 +12,27 @@ public class MapperMethod {
     private final SqlCommand command;
     private final MethodSignature method;
 
-    private Class<?> returnType;
-
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration configuration) {
         this.command = new SqlCommand(configuration, mapperInterface, method);
-        returnType = method.getReturnType();
-
         this.method = new MethodSignature(configuration, method);
     }
 
     public Object execute(SqlSession sqlSession, Object[] args) {
         Object result = null;
+        Object param = method.convertArgsToSqlCommandParam(args);
         switch (command.getType()) {
             case INSERT:
+                result = sqlSession.insert(command.getName(), param);
                 break;
             case DELETE:
+                result = sqlSession.delete(command.getName(), param);
                 break;
             case UPDATE:
+                result = sqlSession.update(command.getName(), param);
                 break;
             case SELECT:
-                Object param = method.convertArgsToSqlCommandParam(args);
-                if (Collection.class.isAssignableFrom(returnType)) {
+
+                if (method.returnsMany) {
                     // 返回值是集合
                     result = sqlSession.selectList(command.getName(), param);
                 } else {
@@ -73,11 +73,14 @@ public class MapperMethod {
      * 方法签名
      */
     public static class MethodSignature {
-
+        private final boolean returnsMany;
+        private final Class<?> returnType;
         private final SortedMap<Integer, String> params;
 
         public MethodSignature(Configuration configuration, Method method) {
             this.params = Collections.unmodifiableSortedMap(getParams(method));
+            this.returnType = method.getReturnType();
+            this.returnsMany = (configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray());
         }
 
         public Object convertArgsToSqlCommandParam(Object[] args) {
@@ -86,14 +89,14 @@ public class MapperMethod {
                 //如果没参数
                 return null;
             } else if (paramCount == 1) {
-                return args[params.keySet().iterator().next().intValue()];
+                return args[params.keySet().iterator().next()];
             } else {
                 // 否则，返回一个ParamMap，修改参数名，参数名就是其位置
                 final Map<String, Object> param = new ParamMap<Object>();
                 int i = 0;
                 for (Map.Entry<Integer, String> entry : params.entrySet()) {
                     // 1.先加一个#{0},#{1},#{2}...参数
-                    param.put(entry.getValue(), args[entry.getKey().intValue()]);
+                    param.put(entry.getValue(), args[entry.getKey()]);
                     // issue #71, add param names as param1, param2...but ensure backward compatibility
                     final String genericParamName = "param" + (i + 1);
                     if (!param.containsKey(genericParamName)) {

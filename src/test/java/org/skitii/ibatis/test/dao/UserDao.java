@@ -15,4 +15,6 @@ public interface UserDao {
 
     String queryName(Long id);
 
+    int insertUser(User user);
+
 }

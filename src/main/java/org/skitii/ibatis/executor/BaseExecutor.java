@@ -9,6 +9,7 @@ import org.skitii.ibatis.session.RowBounds;
 import org.skitii.ibatis.transaction.Transaction;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -38,6 +39,16 @@ public abstract class BaseExecutor implements Executor {
     }
 
     protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
+
+    @Override
+    public int update(MappedStatement ms, Object parameter) throws SQLException {
+        if (closed) {
+            throw new RuntimeException("Executor was closed.");
+        }
+        return doUpdate(ms, parameter);
+    }
+
+    protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
 
     @Override
     public Transaction getTransaction() {
@@ -91,4 +102,14 @@ public abstract class BaseExecutor implements Executor {
             closed = true;
         }
     }
+
+    protected void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ignore) {
+            }
+        }
+    }
+
 }

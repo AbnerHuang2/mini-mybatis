@@ -32,17 +32,22 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
 
         // 2.配置select|insert|update|delete
-        buildStatementFromContext(element.elements("select"));
+        // 2.配置select|insert|update|delete
+        buildStatementFromContext(element.elements("select"),
+                element.elements("insert"),
+                element.elements("update"),
+                element.elements("delete"));
 
        configuration.addLoadedResource(resource);
        configuration.addMapper(Resources.classForName(namespace));
     }
 
-    private void buildStatementFromContext(List<Element> list) {
-        for (Element ele : list) {
-            //解析sql语句
-            XMLStatementBuilder statementBuilder = new XMLStatementBuilder(configuration, ele, namespace, builderAssistant);
-            statementBuilder.parseStatementNode();
+    private void buildStatementFromContext(List<Element>... list) {
+        for (List<Element> elements : list) {
+            for (Element element : elements) {
+                XMLStatementBuilder statementBuilder = new XMLStatementBuilder(configuration, element, namespace, builderAssistant);
+                statementBuilder.parseStatementNode();
+            }
         }
     }
 

@@ -19,4 +19,8 @@ public interface SqlSession {
     <T> List<T> selectList(String statement);
 
     <T> List<T> selectList(String statement, Object parameter);
+
+    int insert(String statement, Object parameter);
+    int update(String statement, Object parameter);
+    int delete(String statement, Object parameter);
 }
