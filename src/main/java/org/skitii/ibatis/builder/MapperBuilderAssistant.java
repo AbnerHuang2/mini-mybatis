@@ -2,6 +2,7 @@ package org.skitii.ibatis.builder;
 
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.mapping.ResultMap;
+import org.skitii.ibatis.mapping.ResultMapping;
 import org.skitii.ibatis.mapping.SqlCommandType;
 import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.scripting.LanguageDriver;
@@ -10,11 +11,11 @@ import org.skitii.ibatis.session.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapperBuildAssistant extends BaseBuilder {
+public class MapperBuilderAssistant extends BaseBuilder {
     private String currentNamespace;
     private String resource;
 
-    public MapperBuildAssistant(Configuration configuration, String resource) {
+    public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
         this.resource = resource;
     }
@@ -58,13 +59,29 @@ public class MapperBuildAssistant extends BaseBuilder {
         resultMap = applyCurrentNamespace(resultMap, true);
         List<ResultMap> resultMaps = new ArrayList<>();
         if (resultMap != null) {
-            // TODO 暂无Map结果映射配置
+            // 暂无Map结果映射配置
+            String[] resultMapNames = resultMap.split(",");
+            for (String resultMapName : resultMapNames) {
+                resultMaps.add(configuration.getResultMap(resultMapName.trim()));
+            }
         } else if (resultType != null) {
             ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(configuration, statementBuilder.getId() + "-Inline",
                     resultType, new ArrayList<>());
             resultMaps.add(inlineResultMapBuilder.build());
         }
         statementBuilder.resultMaps(resultMaps);
+    }
+
+    public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
+        ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
+                configuration,
+                id,
+                type,
+                resultMappings);
+
+        ResultMap resultMap = inlineResultMapBuilder.build();
+        configuration.addResultMap(resultMap);
+        return resultMap;
     }
 
 

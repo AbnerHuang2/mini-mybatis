@@ -34,6 +34,13 @@ public class ApiTest {
     }
 
     @Test
+    public void testAnnotation(){
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+        List<User> users = dao.queryByName("abner");
+        System.out.println(users.size());
+    }
+
+    @Test
     public void testWithReflect() throws IOException {
 
 

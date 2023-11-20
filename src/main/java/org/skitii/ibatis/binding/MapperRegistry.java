@@ -1,5 +1,6 @@
 package org.skitii.ibatis.binding;
 
+import org.skitii.ibatis.builder.annotation.MapperAnnotationBuilder;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.session.SqlSession;
 
@@ -38,6 +39,9 @@ public class MapperRegistry {
                 throw new BindingException("Type " + mapperInterface + " is already known to the MapperRegistry.");
             }
             knownMappers.put(mapperInterface, new MapperProxyFactory<>(mapperInterface));
+            // 解析注解类语句配置
+            MapperAnnotationBuilder parser = new MapperAnnotationBuilder(configuration, mapperInterface);
+            parser.parse();
         }
     }
 

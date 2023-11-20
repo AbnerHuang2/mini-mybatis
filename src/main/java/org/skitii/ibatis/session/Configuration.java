@@ -15,6 +15,7 @@ import org.skitii.ibatis.executor.statement.StatementHandler;
 import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
+import org.skitii.ibatis.mapping.ResultMap;
 import org.skitii.ibatis.reflection.MetaObject;
 import org.skitii.ibatis.reflection.factory.DefaultObjectFactory;
 import org.skitii.ibatis.reflection.factory.ObjectFactory;
@@ -62,6 +63,9 @@ public class Configuration {
 
     // 类型别名注册机
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    // 结果映射，存在Map里
+    protected final Map<String, ResultMap> resultMaps = new HashMap<>();
 
     public void addMappedStatement(MappedStatement ms) {
         mappedStatements.put(ms.getId(), ms);
@@ -146,6 +150,14 @@ public class Configuration {
         ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
         // 插件的一些参数，也是在这里处理，暂时不添加这部分内容 interceptorChain.pluginAll(parameterHandler);
         return parameterHandler;
+    }
+
+    public ResultMap getResultMap(String id) {
+        return resultMaps.get(id);
+    }
+
+    public void addResultMap(ResultMap resultMap) {
+        resultMaps.put(resultMap.getId(), resultMap);
     }
 
 }

@@ -7,6 +7,7 @@ import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.scripting.LanguageDriver;
 import org.skitii.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.skitii.ibatis.scripting.defaults.RawSqlSource;
 import org.skitii.ibatis.session.Configuration;
 
 /**
@@ -19,6 +20,11 @@ public class XMLLanguageDriver implements LanguageDriver {
         // 用XML脚本构建器解析
         XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
         return builder.parseScriptNode();
+    }
+
+    @Override
+    public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
+        return new RawSqlSource(configuration, script, parameterType);
     }
 
     @Override
