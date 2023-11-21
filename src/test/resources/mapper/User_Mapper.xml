@@ -3,7 +3,7 @@
 <mapper namespace="org.skitii.ibatis.test.dao.UserDao">
 
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="org.skitii.ibatis.test.domain.User">
-        SELECT id, name, age
+        SELECT id, name, age, user_email
         FROM t_user
         where id = #{id}
     </select>

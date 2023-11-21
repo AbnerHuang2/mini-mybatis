@@ -45,13 +45,13 @@ public class ApiTest {
 
 
         UserDao dao = sqlSession.getMapper(UserDao.class);
-        String name = dao.queryName(1L);
-        System.out.println(name);
+//        String name = dao.queryName(1L);
+//        System.out.println(name);
         User user = dao.queryUserInfoById(1L);
-        System.out.println(user.getAge());
+        System.out.println(user.getUserEmail());
 
-        List<User> users = dao.queryUserList();
-        System.out.println(users.size());
+//        List<User> users = dao.queryUserList();
+//        System.out.println(users.size());
     }
 
     @Test

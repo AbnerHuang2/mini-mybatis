@@ -1,6 +1,7 @@
 package org.skitii.ibatis.reflection;
 
 
+import com.google.common.base.CaseFormat;
 import org.skitii.ibatis.reflection.factory.ObjectFactory;
 import org.skitii.ibatis.reflection.property.PropertyTokenizer;
 import org.skitii.ibatis.reflection.wrapper.*;
@@ -11,9 +12,7 @@ import java.util.Map;
 
 /**
  * @author 小傅哥，微信：fustack
- * @description 元对象
- * @github https://github.com/fuzhengwei
- * @Copyright 公众号：bugstack虫洞栈 | 博客：https://bugstack.cn - 沉淀、分享、成长，让自己和他人都能有所收获！
+ * @description 元对象，将java的po转化成元对象
  */
 public class MetaObject {
     // 原对象
@@ -70,9 +69,9 @@ public class MetaObject {
     }
 
     /* --------以下方法都是委派给 ObjectWrapper------ */
-    // 查找属性
+    // 查找属性（支持下划线转驼峰）
     public String findProperty(String propName, boolean useCamelCaseMapping) {
-        return objectWrapper.findProperty(propName, useCamelCaseMapping);
+        return objectWrapper.findProperty(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, propName), useCamelCaseMapping);
     }
 
     // 取得getter的名字列表

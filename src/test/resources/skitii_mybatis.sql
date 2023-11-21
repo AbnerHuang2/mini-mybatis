@@ -9,3 +9,6 @@ CREATE TABLE `t_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 insert into t_user values(1,'skitii',18);
+
+alter table t_user modify column id bigint(20) unsigned primary key auto_increment;
+alter table t_user add column user_email varchar(32);
