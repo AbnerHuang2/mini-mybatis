@@ -1,12 +1,10 @@
 package org.skitii.ibatis.builder;
 
-import org.skitii.ibatis.mapping.MappedStatement;
-import org.skitii.ibatis.mapping.ResultMap;
-import org.skitii.ibatis.mapping.ResultMapping;
-import org.skitii.ibatis.mapping.SqlCommandType;
-import org.skitii.ibatis.mapping.SqlSource;
+import org.skitii.ibatis.mapping.*;
+import org.skitii.ibatis.reflection.MetaClass;
 import org.skitii.ibatis.scripting.LanguageDriver;
 import org.skitii.ibatis.session.Configuration;
+import org.skitii.ibatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +16,12 @@ public class MapperBuilderAssistant extends BaseBuilder {
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
         this.resource = resource;
+    }
+
+    public MapperBuilderAssistant(Configuration configuration, String resource, String currentNamespace) {
+        super(configuration);
+        this.resource = resource;
+        this.currentNamespace = currentNamespace;
     }
 
     public String getCurrentNamespace() {
@@ -73,6 +77,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
+        // 补全ID全路径
+        id = applyCurrentNamespace(id, false);
         ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
                 configuration,
                 id,
@@ -84,5 +90,34 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return resultMap;
     }
 
+    public ResultMapping buildResultMapping(
+            Class<?> resultType,
+            String property,
+            String column,
+            List<ResultFlag> flags) {
+
+        Class<?> javaTypeClass = resolveResultJavaType(resultType, property, null);
+        TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, null);
+
+        ResultMapping.Builder builder = new ResultMapping.Builder(configuration, property, column, javaTypeClass);
+        builder.typeHandler(typeHandlerInstance);
+        builder.flags(flags);
+
+        return builder.build();
+    }
+
+    private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
+        if (javaType == null && property != null) {
+            try {
+                MetaClass metaResultType = MetaClass.forClass(resultType);
+                javaType = metaResultType.getSetterType(property);
+            } catch (Exception ignore) {
+            }
+        }
+        if (javaType == null) {
+            javaType = Object.class;
+        }
+        return javaType;
+    }
 
 }

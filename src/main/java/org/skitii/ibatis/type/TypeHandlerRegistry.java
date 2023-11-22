@@ -63,4 +63,8 @@ public class TypeHandlerRegistry {
         return (TypeHandler<T>) handler;
     }
 
+    public TypeHandler<?> getMappingTypeHandler(Class<? extends TypeHandler<?>> handlerType) {
+        return ALL_TYPE_HANDLERS_MAP.get(handlerType);
+    }
+
 }

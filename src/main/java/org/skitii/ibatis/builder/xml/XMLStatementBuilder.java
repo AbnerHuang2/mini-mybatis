@@ -34,7 +34,6 @@ public class XMLStatementBuilder extends BaseBuilder {
         // 获取默认语言驱动器
         LanguageDriver driver = configuration.getLanguageRegistry().getDefaultDriver();
         SqlSource sqlSource = driver.createSqlSource(configuration, element, parameterTypeClass);
-        builderAssistant.setCurrentNamespace(namespace);
         // 添加到configuration中
         builderAssistant.addMappedStatement(id, sqlSource, sqlCommandType, parameterTypeClass, resultTypeClass, resultMap, driver);
     }

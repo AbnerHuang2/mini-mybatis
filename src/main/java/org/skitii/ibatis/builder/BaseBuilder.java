@@ -2,6 +2,7 @@ package org.skitii.ibatis.builder;
 
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.type.TypeAliasRegistry;
+import org.skitii.ibatis.type.TypeHandler;
 import org.skitii.ibatis.type.TypeHandlerRegistry;
 
 /**
@@ -27,4 +28,12 @@ public abstract class BaseBuilder {
     protected Class<?> resolveAlias(String alias) {
         return typeAliasRegistry.resolveAlias(alias);
     }
+
+    protected TypeHandler<?> resolveTypeHandler(Class<?> javaType, Class<? extends TypeHandler<?>> typeHandlerType) {
+        if (typeHandlerType == null) {
+            return null;
+        }
+        return typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
+    }
+
 }
