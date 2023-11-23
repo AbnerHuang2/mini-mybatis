@@ -29,6 +29,10 @@
     <insert id="insertUser" parameterType="org.skitii.ibatis.test.domain.User">
         INSERT INTO t_user (name, age)
         VALUES (#{name}, #{age})
+
+        <selectKey keyProperty="id" order="AFTER" resultType="long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
 </mapper>

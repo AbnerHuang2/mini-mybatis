@@ -38,6 +38,12 @@ public abstract class BaseExecutor implements Executor {
         return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
+    @Override
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+        BoundSql boundSql = ms.getSqlSource().getBoundSql(parameter);
+        return query(ms, parameter, rowBounds, resultHandler, boundSql);
+    }
+
     protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     @Override

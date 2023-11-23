@@ -7,6 +7,7 @@ import org.skitii.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.skitii.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.executor.SimpleExecutor;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
 import org.skitii.ibatis.executor.parameter.ParameterHandler;
 import org.skitii.ibatis.executor.resultset.DefaultResultSetHandler;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
@@ -97,6 +98,9 @@ public class Configuration {
 
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+    protected boolean useGeneratedKeys = false;
+    protected final Map<String, KeyGenerator> keyGenerators = new HashMap<>();
+
     /**
      * 创建结果集处理器
      */
@@ -117,7 +121,7 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
                                                 RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler);
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -158,6 +162,26 @@ public class Configuration {
 
     public void addResultMap(ResultMap resultMap) {
         resultMaps.put(resultMap.getId(), resultMap);
+    }
+
+    public void addKeyGenerator(String id, KeyGenerator keyGenerator) {
+        keyGenerators.put(id, keyGenerator);
+    }
+
+    public KeyGenerator getKeyGenerator(String id) {
+        return keyGenerators.get(id);
+    }
+
+    public boolean hasKeyGenerator(String id) {
+        return keyGenerators.containsKey(id);
+    }
+
+    public boolean isUseGeneratedKeys() {
+        return useGeneratedKeys;
+    }
+
+    public void setUseGeneratedKeys(boolean useGeneratedKeys) {
+        this.useGeneratedKeys = useGeneratedKeys;
     }
 
 }

@@ -26,6 +26,13 @@ public class JdbcTransaction implements Transaction {
 
     @Override
     public Connection getConnection() throws SQLException {
+        /**
+         * 如果 connection 不为空，直接返回[解决selectKey配置自增id时，SELECT LAST_INSERT_ID()总是为0的情况。原因：https://www.51cto.com/article/712406.html]
+         * 核心问题就是，更新和查询是两个不同的连接，所以查询不到更新的数据
+         */
+        if (null != connection) {
+            return connection;
+        }
         connection = dataSource.getConnection();
         connection.setTransactionIsolation(level.getLevel());
         connection.setAutoCommit(autoCommit);

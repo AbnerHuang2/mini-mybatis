@@ -1,5 +1,7 @@
 package org.skitii.ibatis.builder;
 
+import org.checkerframework.checker.units.qual.K;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
 import org.skitii.ibatis.mapping.*;
 import org.skitii.ibatis.reflection.MetaClass;
 import org.skitii.ibatis.scripting.LanguageDriver;
@@ -49,10 +51,15 @@ public class MapperBuilderAssistant extends BaseBuilder {
             Class<?> parameterType,
             Class<?> resultType,
             String resultMap,
+            KeyGenerator keyGenerator,
+            String keyProperty,
             LanguageDriver lang
     ) {
         id = applyCurrentNamespace(id, false);
         MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlCommandType, sqlSource, resultType);
+        statementBuilder.keyGenerator(keyGenerator);
+        statementBuilder.keyProperty(keyProperty);
+
         setStatementResultMap(resultMap, resultType, statementBuilder);
         MappedStatement statement = statementBuilder.build();
         configuration.addMappedStatement(statement);

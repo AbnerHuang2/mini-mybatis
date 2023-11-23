@@ -61,7 +61,7 @@ public class ApiTest {
         user.setAge(18);
         user.setName("abner");
         int cnt = dao.insertUser(user);
-        System.out.println(cnt);
+        System.out.println(user.getId());
     }
 
     @Test

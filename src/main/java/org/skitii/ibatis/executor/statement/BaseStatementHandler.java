@@ -1,6 +1,7 @@
 package org.skitii.ibatis.executor.statement;
 
 import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
 import org.skitii.ibatis.executor.parameter.ParameterHandler;
 import org.skitii.ibatis.executor.resultset.ResultSetHandler;
 import org.skitii.ibatis.mapping.BoundSql;
@@ -30,12 +31,16 @@ public abstract class BaseStatementHandler implements StatementHandler{
     protected BoundSql boundSql;
 
     protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
-                                   RowBounds rowBounds, ResultHandler resultHandler) {
+                                   RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
         this.parameterObject = parameterObject;
-        this.boundSql = mappedStatement.getSqlSource().getBoundSql(parameterObject);
+        if (boundSql == null) {
+            generateKeys(parameterObject);
+            boundSql = mappedStatement.getSqlSource().getBoundSql(parameterObject);
+        }
+        this.boundSql = boundSql;
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, resultHandler, boundSql);
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
     }
@@ -55,4 +60,10 @@ public abstract class BaseStatementHandler implements StatementHandler{
     }
 
     protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
+
+    protected void generateKeys(Object parameter) {
+        KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+        keyGenerator.processBefore(executor, mappedStatement, null, parameter);
+    }
+
 }

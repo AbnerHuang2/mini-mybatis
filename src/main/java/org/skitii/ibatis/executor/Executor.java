@@ -19,6 +19,8 @@ public interface Executor {
 
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
+
     int update(MappedStatement ms, Object parameter) throws SQLException;
 
     Transaction getTransaction();

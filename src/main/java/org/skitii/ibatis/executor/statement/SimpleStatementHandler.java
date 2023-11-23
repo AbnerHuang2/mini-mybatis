@@ -1,6 +1,7 @@
 package org.skitii.ibatis.executor.statement;
 
 import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.ResultHandler;
 import org.skitii.ibatis.session.RowBounds;
@@ -16,8 +17,9 @@ import java.util.List;
  **/
 public class SimpleStatementHandler extends BaseStatementHandler{
 
-    public SimpleStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) {
-        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler);
+    public SimpleStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
+                                  RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     }
 
     @Override

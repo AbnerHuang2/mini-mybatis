@@ -1,5 +1,8 @@
 package org.skitii.ibatis.mapping;
 
+import org.skitii.ibatis.executor.kengen.Jdbc3KeyGenerator;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
+import org.skitii.ibatis.executor.kengen.NoKeyGenerator;
 import org.skitii.ibatis.scripting.LanguageDriver;
 import org.skitii.ibatis.session.Configuration;
 
@@ -18,6 +21,13 @@ public class MappedStatement  {
     private LanguageDriver lang;
     private List<ResultMap> resultMaps;
 
+    private KeyGenerator keyGenerator;
+    private String[] keyProperties;
+    private String[] keyColumns;
+
+    public MappedStatement() {
+    }
+
     /**
      * 建造者
      */
@@ -32,6 +42,8 @@ public class MappedStatement  {
             mappedStatement.sqlSource = sqlSource;
             mappedStatement.resultType = resultType;
             mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
+            mappedStatement.keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
+            mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 
         public String getId() {
@@ -40,6 +52,16 @@ public class MappedStatement  {
 
         public Builder resultMaps(List<ResultMap> resultMaps) {
             mappedStatement.resultMaps = resultMaps;
+            return this;
+        }
+
+        public Builder keyGenerator(KeyGenerator keyGenerator) {
+            mappedStatement.keyGenerator = keyGenerator;
+            return this;
+        }
+
+        public Builder keyProperty(String keyProperty) {
+            mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
             return this;
         }
 
@@ -77,6 +99,26 @@ public class MappedStatement  {
 
     public List<ResultMap> getResultMaps() {
         return resultMaps;
+    }
+
+    public String[] getKeyColumns() {
+        return keyColumns;
+    }
+
+    public String[] getKeyProperties() {
+        return keyProperties;
+    }
+
+    public KeyGenerator getKeyGenerator() {
+        return keyGenerator;
+    }
+
+    private static String[] delimitedStringToArray(String in) {
+        if (in == null || in.trim().length() == 0) {
+            return null;
+        } else {
+            return in.split(",");
+        }
     }
 
 }

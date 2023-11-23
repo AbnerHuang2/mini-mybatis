@@ -1,6 +1,8 @@
 package org.skitii.ibatis.executor.statement;
 
 import org.skitii.ibatis.executor.Executor;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
+import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.ResultHandler;
 import org.skitii.ibatis.session.RowBounds;
@@ -17,8 +19,10 @@ import java.util.List;
  **/
 public class PreparedStatementHandler extends BaseStatementHandler{
 
-    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) {
-        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler);
+    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement,
+                                    Object parameterObject, RowBounds rowBounds,
+                                    ResultHandler resultHandler, BoundSql boundSql) {
+        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     }
 
     @Override
@@ -44,6 +48,9 @@ public class PreparedStatementHandler extends BaseStatementHandler{
     public int update(Statement statement) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;
         ps.execute();
-        return ps.getUpdateCount();
+        int rows = ps.getUpdateCount();
+        KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+        keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
+        return rows;
     }
 }

@@ -6,6 +6,9 @@ import org.skitii.ibatis.annotations.Select;
 import org.skitii.ibatis.annotations.Update;
 import org.skitii.ibatis.binding.MapperMethod;
 import org.skitii.ibatis.builder.MapperBuilderAssistant;
+import org.skitii.ibatis.executor.kengen.Jdbc3KeyGenerator;
+import org.skitii.ibatis.executor.kengen.KeyGenerator;
+import org.skitii.ibatis.executor.kengen.NoKeyGenerator;
 import org.skitii.ibatis.mapping.SqlCommandType;
 import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.scripting.LanguageDriver;
@@ -41,6 +44,7 @@ public class MapperAnnotationBuilder {
         this.assistant = new MapperBuilderAssistant(configuration, resource);
         this.configuration = configuration;
         this.type = type;
+        assistant.setCurrentNamespace(type.getName());
 
         sqlAnnotationTypes.add(Select.class);
         sqlAnnotationTypes.add(Insert.class);
@@ -51,7 +55,6 @@ public class MapperAnnotationBuilder {
     public void parse() {
         String resource = type.toString();
         if (!configuration.isResourceLoaded(resource)) {
-            assistant.setCurrentNamespace(type.getName());
 
             Method[] methods = type.getMethods();
             for (Method method : methods) {
@@ -79,7 +82,15 @@ public class MapperAnnotationBuilder {
             if (isSelect) {
                 resultMapId = parseResultMap(method);
             }
-            assistant.setCurrentNamespace(type.getName());
+
+            KeyGenerator keyGenerator;
+            String keyProperty = "id";
+            if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
+                keyGenerator = configuration.isUseGeneratedKeys() ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
+            } else {
+                keyGenerator = new NoKeyGenerator();
+            }
+
             // 调用助手类
             assistant.addMappedStatement(
                     mappedStatementId,
@@ -88,6 +99,8 @@ public class MapperAnnotationBuilder {
                     parameterTypeClass,
                     getReturnType(method),
                     resultMapId,
+                    keyGenerator,
+                    keyProperty,
                     languageDriver
             );
         }
