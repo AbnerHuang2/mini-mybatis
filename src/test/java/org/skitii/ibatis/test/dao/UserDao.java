@@ -21,4 +21,6 @@ public interface UserDao {
 
     int insertUser(User user);
 
+    List<User> dynamicQueryByUserCondition(User user);
+
 }

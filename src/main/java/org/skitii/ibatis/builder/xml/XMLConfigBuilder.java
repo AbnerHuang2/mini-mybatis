@@ -76,6 +76,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 environmentBuilder.dataSource(dataSourceFactory.getDataSource())
                                 .transactionFactory(txFactory);
                 configuration.setEnvironment(environmentBuilder.build());
+                configuration.setDatabaseId(defaultEnvironmentName);
             }
         }
     }

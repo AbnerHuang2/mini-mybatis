@@ -35,4 +35,18 @@
         </selectKey>
     </insert>
 
+    <select id="dynamicQueryByUserCondition" parameterType="org.skitii.ibatis.test.domain.User" resultType="org.skitii.ibatis.test.domain.User">
+        SELECT id, name, age, user_email
+        FROM t_user
+        <trim prefix="WHERE" prefixOverrides="AND | OR" suffixOverrides="and">
+            <if test="null != id">
+                id = #{id}
+            </if>
+            and
+            <if test="null != name">
+                name = #{name}
+            </if>
+        </trim>
+    </select>
+
 </mapper>

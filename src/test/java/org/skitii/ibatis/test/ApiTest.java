@@ -34,6 +34,16 @@ public class ApiTest {
     }
 
     @Test
+    public void testDynamicSql(){
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+        User userQueryDto = new User();
+        userQueryDto.setId(1L)
+                .setName("abner");
+        List<User> users = dao.dynamicQueryByUserCondition(userQueryDto);
+        System.out.println(users.size());
+    }
+
+    @Test
     public void testAnnotation(){
         UserDao dao = sqlSession.getMapper(UserDao.class);
         List<User> users = dao.queryByName("abner");
