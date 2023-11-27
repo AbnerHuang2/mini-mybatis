@@ -1,5 +1,6 @@
 package org.skitii.ibatis.executor.statement;
 
+import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.session.ResultHandler;
 
 import java.sql.Connection;
@@ -16,4 +17,6 @@ public interface StatementHandler {
     void parameterize(Statement statement) throws SQLException;
     <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException;
     int update(Statement statement) throws SQLException;
+
+    BoundSql getBoundSql();
 }

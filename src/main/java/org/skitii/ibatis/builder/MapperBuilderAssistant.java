@@ -44,6 +44,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return currentNamespace + "." + base;
     }
 
+    /**
+     * 添加语句，resultMap的id必须包含类引用
+     */
     public MappedStatement addMappedStatement(
             String id,
             SqlSource sqlSource,
@@ -83,6 +86,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         statementBuilder.resultMaps(resultMaps);
     }
 
+    /**
+     * 添加结果映射， id不能包含类引用
+     */
     public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
         // 补全ID全路径
         id = applyCurrentNamespace(id, false);

@@ -53,4 +53,9 @@ public class PreparedStatementHandler extends BaseStatementHandler{
         keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
         return rows;
     }
+
+    @Override
+    public BoundSql getBoundSql() {
+        return boundSql;
+    }
 }

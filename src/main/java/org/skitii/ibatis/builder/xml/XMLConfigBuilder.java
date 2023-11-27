@@ -8,6 +8,7 @@ import org.skitii.ibatis.builder.BaseBuilder;
 import org.skitii.ibatis.datasource.DataSourceFactory;
 import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.mapping.Environment;
+import org.skitii.ibatis.plugin.Interceptor;
 import org.skitii.ibatis.session.Configuration;
 import org.skitii.ibatis.transaction.TransactionFactory;
 import org.xml.sax.InputSource;
@@ -39,6 +40,8 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     public Configuration parse() {
        try {
+           // 解析xml获取plugin信息
+           pluginElement(root.element("plugins"));
            // 解析xml获取environment信息
            environmentsElement(root.element("environments"));
            // 解析xml获取mapper信息
@@ -48,6 +51,24 @@ public class XMLConfigBuilder extends BaseBuilder {
        }
 
         return configuration;
+    }
+
+    private void pluginElement(Element parent) throws Exception {
+        if (parent == null) return;
+        List<Element> elements = parent.elements();
+        for (Element element : elements) {
+            String interceptor = element.attributeValue("interceptor");
+            // 参数配置
+            Properties properties = new Properties();
+            List<Element> propertyElementList = element.elements("property");
+            for (Element property : propertyElementList) {
+                properties.setProperty(property.attributeValue("name"), property.attributeValue("value"));
+            }
+            // 获取插件实现类并实例化：cn.bugstack.mybatis.test.plugin.TestPlugin
+            Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();
+            interceptorInstance.setProperties(properties);
+            configuration.addInterceptor(interceptorInstance);
+        }
     }
 
     // 获取数据源配置信息

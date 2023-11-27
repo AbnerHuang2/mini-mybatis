@@ -9,6 +9,7 @@ import org.skitii.ibatis.builder.MapperBuilderAssistant;
 import org.skitii.ibatis.executor.kengen.Jdbc3KeyGenerator;
 import org.skitii.ibatis.executor.kengen.KeyGenerator;
 import org.skitii.ibatis.executor.kengen.NoKeyGenerator;
+import org.skitii.ibatis.mapping.ResultMap;
 import org.skitii.ibatis.mapping.SqlCommandType;
 import org.skitii.ibatis.mapping.SqlSource;
 import org.skitii.ibatis.scripting.LanguageDriver;
@@ -80,6 +81,7 @@ public class MapperAnnotationBuilder {
 
             String resultMapId = null;
             if (isSelect) {
+                //后续添加MappedStatement需要包括类引用
                 resultMapId = parseResultMap(method);
             }
 
@@ -143,12 +145,13 @@ public class MapperAnnotationBuilder {
         if (suffix.length() < 1) {
             suffix.append("-void");
         }
-        String resultMapId = type.getName() + "." + method.getName() + suffix;
+        String resultMapId = method.getName() + suffix;
 
         // 添加 ResultMap
         Class<?> returnType = getReturnType(method);
-        assistant.addResultMap(resultMapId, returnType, new ArrayList<>());
-        return resultMapId;
+        // 直接添加resultMap不需要类引用
+        ResultMap resultMap = assistant.addResultMap(resultMapId, returnType, new ArrayList<>());
+        return resultMap.getId();
     }
 
     private SqlCommandType getSqlCommandType(Method method) {

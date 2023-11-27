@@ -17,6 +17,8 @@ import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.mapping.ResultMap;
+import org.skitii.ibatis.plugin.Interceptor;
+import org.skitii.ibatis.plugin.InterceptorChain;
 import org.skitii.ibatis.reflection.MetaObject;
 import org.skitii.ibatis.reflection.factory.DefaultObjectFactory;
 import org.skitii.ibatis.reflection.factory.ObjectFactory;
@@ -101,6 +103,8 @@ public class Configuration {
     protected boolean useGeneratedKeys = false;
     protected final Map<String, KeyGenerator> keyGenerators = new HashMap<>();
 
+    protected final InterceptorChain interceptorChain = new InterceptorChain();
+
     /**
      * 创建结果集处理器
      */
@@ -121,7 +125,10 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
                                                 RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
+        StatementHandler statementHandler = new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
+        // 嵌入插件，代理对象
+        statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+        return statementHandler;
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -182,6 +189,10 @@ public class Configuration {
 
     public void setUseGeneratedKeys(boolean useGeneratedKeys) {
         this.useGeneratedKeys = useGeneratedKeys;
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptorChain.addInterceptor(interceptor);
     }
 
 }
