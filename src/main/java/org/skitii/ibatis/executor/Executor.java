@@ -1,5 +1,6 @@
 package org.skitii.ibatis.executor;
 
+import org.skitii.ibatis.cache.CacheKey;
 import org.skitii.ibatis.mapping.BoundSql;
 import org.skitii.ibatis.mapping.MappedStatement;
 import org.skitii.ibatis.session.ResultHandler;
@@ -16,10 +17,9 @@ import java.util.List;
 public interface Executor {
 
     ResultHandler NO_RESULT_HANDLER = null;
-
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
-
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
+
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql, CacheKey key) throws SQLException;
 
     int update(MappedStatement ms, Object parameter) throws SQLException;
 
@@ -30,5 +30,9 @@ public interface Executor {
     void rollback(boolean required) throws SQLException;
 
     void close(boolean forceRollback);
+
+    CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
+
+    void clearLocalCache();
 
 }

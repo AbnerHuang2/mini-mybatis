@@ -25,6 +25,8 @@ public class MappedStatement  {
     private String[] keyProperties;
     private String[] keyColumns;
 
+    private boolean flushCacheRequired;
+
     public MappedStatement() {
     }
 
@@ -119,6 +121,10 @@ public class MappedStatement  {
         } else {
             return in.split(",");
         }
+    }
+
+    public boolean isFlushCacheRequired() {
+        return flushCacheRequired;
     }
 
 }

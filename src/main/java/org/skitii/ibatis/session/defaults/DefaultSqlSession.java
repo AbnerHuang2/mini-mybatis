@@ -65,8 +65,7 @@ public class DefaultSqlSession implements SqlSession {
         log.info("执行查询 statement：{} parameter：{}", statement, JSON.toJSONString(parameter));
         try {
             MappedStatement mappedStatement = configuration.getMappedStatement(statement);
-            BoundSql boundSql = mappedStatement.getSqlSource().getBoundSql(parameter);
-            return executor.query(mappedStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, boundSql);
+            return executor.query(mappedStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
         } catch (Exception e) {
             e.printStackTrace();
         }
