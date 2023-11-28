@@ -4,10 +4,8 @@ package org.skitii.ibatis.executor.result;
 import org.skitii.ibatis.session.ResultContext;
 
 /**
- * @author 小傅哥，微信：fustack
+ * @author skitii 
  * @description 默认结果上下文
- * @github https://github.com/fuzhengwei
- * @copyright 公众号：bugstack虫洞栈 | 博客：https://bugstack.cn - 沉淀、分享、成长，让自己和他人都能有所收获！
  */
 public class DefaultResultContext implements ResultContext {
 
