@@ -2,9 +2,13 @@ package org.skitii.ibatis.session;
 
 import lombok.Data;
 import org.skitii.ibatis.binding.MapperRegistry;
+import org.skitii.ibatis.cache.Cache;
+import org.skitii.ibatis.cache.decorators.FifoCache;
+import org.skitii.ibatis.cache.impl.PerpetualCache;
 import org.skitii.ibatis.datasource.druid.DruidDataSourceFactory;
 import org.skitii.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.skitii.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
+import org.skitii.ibatis.executor.CachingExecutor;
 import org.skitii.ibatis.executor.Executor;
 import org.skitii.ibatis.executor.SimpleExecutor;
 import org.skitii.ibatis.executor.kengen.KeyGenerator;
@@ -60,6 +64,8 @@ public class Configuration {
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
+        typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
 
         languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
@@ -105,6 +111,13 @@ public class Configuration {
 
     protected final InterceptorChain interceptorChain = new InterceptorChain();
 
+    // 缓存机制，默认不配置的情况是 SESSION
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+    // 默认启用缓存，cacheEnabled = true/false
+    protected boolean cacheEnabled = true;
+    // 缓存,存在Map里
+    protected final Map<String, Cache> caches = new HashMap<>();
+
     /**
      * 创建结果集处理器
      */
@@ -117,7 +130,12 @@ public class Configuration {
      * 生产执行器
      */
     public Executor newExecutor(Transaction transaction) {
-        return new SimpleExecutor(this, transaction);
+        Executor executor = new SimpleExecutor(this, transaction);
+        // 配置开启缓存，创建 CachingExecutor(默认就是有缓存)装饰者模式
+        if (cacheEnabled) {
+            executor = new CachingExecutor(executor);
+        }
+        return executor;
     }
 
     /**
@@ -193,6 +211,13 @@ public class Configuration {
 
     public void addInterceptor(Interceptor interceptor) {
         interceptorChain.addInterceptor(interceptor);
+    }
+
+    public void addCache(Cache cache) {
+        caches.put(cache.getId(), cache);
+    }
+    public void setLocalCacheScope(LocalCacheScope localCacheScope) {
+        this.localCacheScope = localCacheScope;
     }
 
 }

@@ -21,16 +21,41 @@ import java.util.List;
 public class ApiTest {
 
     private SqlSession sqlSession;
+    private SqlSessionFactory sqlSessionFactory;
 
     @BeforeEach
     public void init() throws IOException{
         //初始化
         String resource = "mybatis-config-datasource.xml";
         Reader reader = Resources.getResourceAsReader(resource);
-        SqlSessionFactory sqlSessionFactory =
+        sqlSessionFactory =
                 new SqlSessionFactoryBuilder().build(reader);
         //使用
         sqlSession = sqlSessionFactory.openSession(TransactionIsolationLevel.READ_COMMITTED, true);
+    }
+
+    @Test
+    public void testCacheLevel2() {
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+        User user = dao.queryUserInfoById(1L);
+        System.out.println(user.getUserEmail());
+        // 关闭sqlSession时触发二级缓存刷新，以便下面的查询能走二级缓存。
+        sqlSession.close();
+        // 二级缓存
+        SqlSession sqlSession2 = sqlSessionFactory.openSession();
+        User user2 = sqlSession2.getMapper(UserDao.class).queryUserInfoById(1L);
+        System.out.println(user2.getUserEmail());
+        sqlSession2.close();
+    }
+
+    @Test
+    public void testCacheLevel1() {
+        UserDao dao = sqlSession.getMapper(UserDao.class);
+        User user = dao.queryUserInfoById(1L);
+        System.out.println(user.getUserEmail());
+        // 一级缓存
+        User user1 = dao.queryUserInfoById(1L);
+        System.out.println(user1.getUserEmail());
     }
 
     @Test

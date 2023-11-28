@@ -101,6 +101,8 @@ public class MapperAnnotationBuilder {
                     parameterTypeClass,
                     getReturnType(method),
                     resultMapId,
+                    false,
+                    false,
                     keyGenerator,
                     keyProperty,
                     languageDriver

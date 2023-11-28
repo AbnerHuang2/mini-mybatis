@@ -1,5 +1,6 @@
 package org.skitii.ibatis.mapping;
 
+import org.skitii.ibatis.cache.Cache;
 import org.skitii.ibatis.executor.kengen.Jdbc3KeyGenerator;
 import org.skitii.ibatis.executor.kengen.KeyGenerator;
 import org.skitii.ibatis.executor.kengen.NoKeyGenerator;
@@ -26,6 +27,9 @@ public class MappedStatement  {
     private String[] keyColumns;
 
     private boolean flushCacheRequired;
+
+    private Cache cache;
+    private boolean useCache;
 
     public MappedStatement() {
     }
@@ -66,6 +70,22 @@ public class MappedStatement  {
             mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
             return this;
         }
+
+        public Builder cache(Cache cache) {
+            mappedStatement.cache = cache;
+            return this;
+        }
+
+        public Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.flushCacheRequired = flushCacheRequired;
+            return this;
+        }
+
+        public Builder useCache(boolean useCache) {
+            mappedStatement.useCache = useCache;
+            return this;
+        }
+
 
         public MappedStatement build() {
             assert mappedStatement.configuration != null;
@@ -125,6 +145,14 @@ public class MappedStatement  {
 
     public boolean isFlushCacheRequired() {
         return flushCacheRequired;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
+    }
+
+    public Cache getCache() {
+        return cache;
     }
 
 }

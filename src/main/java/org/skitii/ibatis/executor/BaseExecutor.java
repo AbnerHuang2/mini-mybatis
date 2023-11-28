@@ -201,4 +201,9 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
+    @Override
+    public void setExecutorWrapper(Executor executor) {
+        this.wrapper = wrapper;
+    }
+
 }

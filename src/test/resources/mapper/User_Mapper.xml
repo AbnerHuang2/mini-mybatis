@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.skitii.ibatis.test.dao.UserDao">
 
+    <cache eviction="FIFO" flushInterval="600000" size="512" readOnly="true"/>
+
     <resultMap id="userMap" type="org.skitii.ibatis.test.domain.User">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
@@ -9,7 +11,7 @@
         <result column="user_email" property="userEmail"/>
     </resultMap>
 
-    <select id="queryUserInfoById" parameterType="java.lang.Long" resultMap="userMap">
+    <select id="queryUserInfoById" parameterType="java.lang.Long" resultMap="userMap" flushCache="false" useCache="true">
         SELECT id, name, age, user_email
         FROM t_user
         where id = #{id}

@@ -35,4 +35,6 @@ public interface Executor {
 
     void clearLocalCache();
 
+    void setExecutorWrapper(Executor executor);
+
 }

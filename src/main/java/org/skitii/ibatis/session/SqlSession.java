@@ -23,4 +23,22 @@ public interface SqlSession {
     int insert(String statement, Object parameter);
     int update(String statement, Object parameter);
     int delete(String statement, Object parameter);
+
+    /**
+     * 以下是事务控制方法 commit,rollback
+     * Flushes batch statements and commits database connection.
+     * Note that database connection will not be committed if no updates/deletes/inserts were called.
+     */
+    void commit();
+
+    /**
+     * 关闭Session
+     */
+    void close();
+
+    /**
+     * 清理 Session 缓存
+     */
+    void clearCache();
+
 }

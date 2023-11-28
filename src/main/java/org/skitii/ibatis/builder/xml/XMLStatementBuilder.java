@@ -36,7 +36,9 @@ public class XMLStatementBuilder extends BaseBuilder {
         String resultMap = element.attributeValue("resultMap");
         Class<?> resultTypeClass = resolveAlias(resultType);
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(element.getName().toUpperCase(Locale.ENGLISH));
-
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        boolean flushCache = Boolean.parseBoolean(element.attributeValue("flushCache", String.valueOf(!isSelect)));
+        boolean useCache = Boolean.parseBoolean(element.attributeValue("useCache", String.valueOf(!isSelect)));
         // 获取默认语言驱动器
         LanguageDriver driver = configuration.getLanguageRegistry().getDefaultDriver();
         SqlSource sqlSource = driver.createSqlSource(configuration, element, parameterTypeClass);
@@ -55,6 +57,8 @@ public class XMLStatementBuilder extends BaseBuilder {
                 parameterTypeClass,
                 resultTypeClass,
                 resultMap,
+                flushCache,
+                useCache,
                 keyGenerator,
                 keyProperty,
                 driver);
@@ -88,6 +92,8 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         // default
         String resultMap = null;
+        boolean flushCache = false;
+        boolean useCache = false;
         KeyGenerator keyGenerator = new NoKeyGenerator();
 
         // 解析成SqlSource，DynamicSqlSource/RawSqlSource
@@ -101,6 +107,8 @@ public class XMLStatementBuilder extends BaseBuilder {
                 parameterTypeClass,
                 resultTypeClass,
                 resultMap,
+                flushCache,
+                useCache,
                 keyGenerator,
                 keyProperty,
                 langDriver);

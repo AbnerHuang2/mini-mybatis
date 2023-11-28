@@ -34,7 +34,7 @@ public class PerpetualCache implements Cache {
     public Object getObject(Object key) {
         Object obj = cache.get(key);
         if (null != obj) {
-            log.info("一级缓存 \r\nkey：{} \r\nval：{}", key, JSON.toJSONString(obj));
+            log.info("从 PerpetualCache 中获取数据 \r\nkey：{} \r\nval：{}", key, JSON.toJSONString(obj));
         }
         return obj;
     }

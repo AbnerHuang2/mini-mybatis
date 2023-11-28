@@ -10,6 +10,7 @@ import org.skitii.ibatis.io.Resources;
 import org.skitii.ibatis.mapping.Environment;
 import org.skitii.ibatis.plugin.Interceptor;
 import org.skitii.ibatis.session.Configuration;
+import org.skitii.ibatis.session.LocalCacheScope;
 import org.skitii.ibatis.transaction.TransactionFactory;
 import org.xml.sax.InputSource;
 
@@ -42,6 +43,8 @@ public class XMLConfigBuilder extends BaseBuilder {
        try {
            // 解析xml获取plugin信息
            pluginElement(root.element("plugins"));
+           // 解析xml获取settings信息
+           settingsElement(root.element("settings"));
            // 解析xml获取environment信息
            environmentsElement(root.element("environments"));
            // 解析xml获取mapper信息
@@ -51,6 +54,29 @@ public class XMLConfigBuilder extends BaseBuilder {
        }
 
         return configuration;
+    }
+
+    /**
+     * <settings>
+     * <!-- 全局缓存：true/false -->
+     * <setting name="cacheEnabled" value="false"/>
+     * <!--缓存级别：SESSION/STATEMENT-->
+     * <setting name="localCacheScope" value="SESSION"/>
+     * </settings>
+     */
+    private void settingsElement(Element context) {
+        if (context == null) return;
+        List<Element> elements = context.elements();
+        Properties props = new Properties();
+        for (Element element : elements) {
+            props.setProperty(element.attributeValue("name"), element.attributeValue("value"));
+        }
+        configuration.setCacheEnabled(booleanValueOf(props.getProperty("cacheEnabled"), true));
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope")));
+    }
+
+    protected Boolean booleanValueOf(String value, Boolean defaultValue) {
+        return value == null ? defaultValue : Boolean.valueOf(value);
     }
 
     private void pluginElement(Element parent) throws Exception {

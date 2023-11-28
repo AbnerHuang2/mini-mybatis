@@ -91,4 +91,26 @@ public class DefaultSqlSession implements SqlSession {
     public int delete(String statement, Object parameter) {
         return update(statement, parameter);
     }
+
+    @Override
+    public void commit() {
+        try {
+            executor.commit(true);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error commit database.  Cause: " + e);
+        }
+    }
+
+    @Override
+    public void close() {
+        // isCommitOrRollbackRequired(false)
+        executor.close(false);
+    }
+
+    @Override
+    public void clearCache() {
+        executor.clearLocalCache();
+    }
+
+
 }
