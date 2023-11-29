@@ -29,12 +29,6 @@ import org.springframework.core.type.AnnotationMetadata;
 @ConditionalOnClass({SqlSessionFactory.class})
 @EnableConfigurationProperties(MybatisProperties.class)
 public class MybatisAutoConfiguration implements InitializingBean {
-
-    @Bean
-    public Document myDoc(){
-        return DocumentHelper.createDocument();
-    }
-
     @Bean
     //判断当前需要注册的bean的实现类否被spring管理，如果被管理则注入，反之不注入
     @ConditionalOnMissingBean
