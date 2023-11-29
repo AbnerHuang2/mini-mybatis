@@ -39,6 +39,11 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    public XMLConfigBuilder(Document doc) {
+        super(new Configuration());
+        root = doc.getRootElement();
+    }
+
     public Configuration parse() {
        try {
            // 解析xml获取plugin信息

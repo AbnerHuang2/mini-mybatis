@@ -1,5 +1,6 @@
 package org.skitii.ibatis.session;
 
+import org.dom4j.Document;
 import org.skitii.ibatis.builder.xml.XMLConfigBuilder;
 import org.skitii.ibatis.session.defaults.DefaultSqlSessionFactory;
 
@@ -12,16 +13,18 @@ import java.io.Reader;
 public class SqlSessionFactoryBuilder {
     public SqlSessionFactory build(Reader reader) {
         // 解析xml到Configuration对象
-        Configuration configuration = parseXMl2Configuration(reader);
+        XMLConfigBuilder builder = new XMLConfigBuilder(reader);
 
         // 创建SqlSessionFactory对象
-        return new DefaultSqlSessionFactory(configuration);
+        return new DefaultSqlSessionFactory(builder.parse());
     }
 
-    private Configuration parseXMl2Configuration(Reader reader) {
-        XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder(reader);
-        return xmlConfigBuilder.parse();
-    }
+    public SqlSessionFactory build(Document document) {
+        // 解析xml到Configuration对象
+        XMLConfigBuilder builder = new XMLConfigBuilder(document);
 
+        // 创建SqlSessionFactory对象
+        return new DefaultSqlSessionFactory(builder.parse());
+    }
 
 }

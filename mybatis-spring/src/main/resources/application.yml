@@ -1,0 +1,7 @@
+mybatis:
+  driver: com.mysql.jdbc.Driver
+  url: jdbc:mysql://127.0.0.1:3306/skitii_mybatis?useSSL=false&characterEncoding=utf8
+  username: root
+  password: 123
+  mapper-locations: mapper/User_Mapper.xml
+  base-dao-package: org.skitii.middleware.spring.test.dao

@@ -4,6 +4,7 @@ import org.skitii.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
@@ -37,8 +38,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
                 beanDefinition.setResource(resource);
                 beanDefinition.setSource(resource);
                 beanDefinition.setScope("singleton");
-                beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanDefinition.getBeanClassName());
-                beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(sqlSessionFactory);
+                ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
+                constructorArgumentValues.addGenericArgumentValue(beanDefinition.getBeanClassName());
                 beanDefinition.setBeanClass(MapperFactoryBean.class);
 
                 BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);

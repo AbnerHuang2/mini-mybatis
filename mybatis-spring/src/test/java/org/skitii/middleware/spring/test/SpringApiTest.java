@@ -14,7 +14,7 @@ import java.util.List;
 public class SpringApiTest {
 
     public static void main(String[] args) {
-        BeanFactory beanFactory = new ClassPathXmlApplicationContext("spring-config.xml");
+        BeanFactory beanFactory = new ClassPathXmlApplicationContext("spring-config1.xml");
         UserDao userDao = beanFactory.getBean("userDao", UserDao.class);
         User user = userDao.queryUserInfoById(1L);
         System.out.println(user);
